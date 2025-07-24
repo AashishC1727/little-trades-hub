@@ -34,7 +34,7 @@ const Footer = () => {
             <div className="space-y-3">
               <div className="flex items-center space-x-3 text-sm">
                 <Mail className="w-4 h-4 text-primary" />
-                <span>hello@littlelittle.com</span>
+                <span>work.ashish.choudhary@gmail.com</span>
               </div>
               <div className="flex items-center space-x-3 text-sm">
                 <Phone className="w-4 h-4 text-primary" />
@@ -48,17 +48,20 @@ const Footer = () => {
 
             {/* Social Links */}
             <div className="flex space-x-4 mt-6">
-              <Button variant="ghost" size="sm" className="p-2">
-                <Twitter className="w-4 h-4" />
+              <Button variant="ghost" size="sm" className="p-2" asChild>
+                <a href="https://twitter.com/VibeRaterrrr" target="_blank" rel="noopener noreferrer">
+                  <Twitter className="w-4 h-4" />
+                </a>
               </Button>
-              <Button variant="ghost" size="sm" className="p-2">
-                <Linkedin className="w-4 h-4" />
+              <Button variant="ghost" size="sm" className="p-2" asChild>
+                <a href="https://snapchat.com/add/aaassseeesss" target="_blank" rel="noopener noreferrer">
+                  <span className="w-4 h-4 text-xs font-bold">SC</span>
+                </a>
               </Button>
-              <Button variant="ghost" size="sm" className="p-2">
-                <Instagram className="w-4 h-4" />
-              </Button>
-              <Button variant="ghost" size="sm" className="p-2">
-                <Github className="w-4 h-4" />
+              <Button variant="ghost" size="sm" className="p-2" asChild>
+                <a href="https://instagram.com/aaassseeesss" target="_blank" rel="noopener noreferrer">
+                  <Instagram className="w-4 h-4" />
+                </a>
               </Button>
             </div>
           </div>

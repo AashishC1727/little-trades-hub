@@ -19,7 +19,7 @@ const HeroSection = () => {
           {/* Animated Tagline */}
           <div className="relative h-16 mb-8">
             <p className="text-xl md:text-2xl lg:text-3xl font-light text-muted-foreground animate-typewriter overflow-hidden whitespace-nowrap border-r-2 border-foreground">
-              Trade anything. From LITTLE to little.
+              Trade anything. From little to LITTLE.
             </p>
           </div>
         </div>
@@ -70,24 +70,24 @@ const HeroSection = () => {
           </p>
         </div>
 
-        {/* Live Stats */}
+        {/* Development Stats */}
         <div className="mt-16 pt-8 border-t border-border">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div>
-              <div className="text-2xl md:text-3xl font-bold">$2.4B+</div>
+              <div className="text-2xl md:text-3xl font-bold">$__</div>
               <div className="text-sm text-muted-foreground">Volume Traded</div>
             </div>
             <div>
-              <div className="text-2xl md:text-3xl font-bold">1.2M+</div>
-              <div className="text-sm text-muted-foreground">Active Traders</div>
+              <div className="text-2xl md:text-3xl font-bold">__</div>
+              <div className="text-sm text-muted-foreground">Active Users</div>
             </div>
             <div>
-              <div className="text-2xl md:text-3xl font-bold">99.9%</div>
-              <div className="text-sm text-muted-foreground">Uptime</div>
+              <div className="text-2xl md:text-3xl font-bold">Q2 2024</div>
+              <div className="text-sm text-muted-foreground">Launch Date</div>
             </div>
             <div>
-              <div className="text-2xl md:text-3xl font-bold">&lt;1ms</div>
-              <div className="text-sm text-muted-foreground">Execution Speed</div>
+              <div className="text-2xl md:text-3xl font-bold">In Dev</div>
+              <div className="text-sm text-muted-foreground">Current Status</div>
             </div>
           </div>
         </div>
