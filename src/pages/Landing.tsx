@@ -1,6 +1,7 @@
+import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import AssetTicker from '@/components/AssetTicker';
-import ProblemSection from '@/components/ProblemSection';
+import LiveNewsfeed from '@/components/LiveNewsfeed';
 import DashboardPreview from '@/components/DashboardPreview';
 import P2PTradingPreview from '@/components/P2PTradingPreview';
 import AssetDiscoveryPreview from '@/components/AssetDiscoveryPreview';
@@ -11,9 +12,10 @@ import Footer from '@/components/Footer';
 const Landing = () => {
   return (
     <div className="min-h-screen bg-background">
+      <Header />
       <HeroSection />
       <AssetTicker />
-      <ProblemSection />
+      <LiveNewsfeed />
       <DashboardPreview />
       <P2PTradingPreview />
       <AssetDiscoveryPreview />

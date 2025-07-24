@@ -63,12 +63,6 @@ const HeroSection = () => {
           </Button>
         </div>
 
-        {/* Demo Notice */}
-        <div className="mt-6 p-4 bg-muted/50 rounded-lg border">
-          <p className="text-sm text-muted-foreground">
-            👆 Click "See Live Dashboard" to view all 10 trading features we just built!
-          </p>
-        </div>
 
         {/* Development Stats */}
         <div className="mt-16 pt-8 border-t border-border">
@@ -82,7 +76,7 @@ const HeroSection = () => {
               <div className="text-sm text-muted-foreground">Active Users</div>
             </div>
             <div>
-              <div className="text-2xl md:text-3xl font-bold">Q2 2024</div>
+              <div className="text-2xl md:text-3xl font-bold">Launching soon</div>
               <div className="text-sm text-muted-foreground">Launch Date</div>
             </div>
             <div>
