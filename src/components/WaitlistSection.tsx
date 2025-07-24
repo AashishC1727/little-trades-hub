@@ -73,7 +73,7 @@ const WaitlistSection = () => {
                   </div>
                   
                   <p className="text-sm text-muted-foreground">
-                    No spam. Unsubscribe anytime. We respect your privacy.
+                    No spam. Just early access. Privacy respected.
                   </p>
                 </form>
               ) : (
