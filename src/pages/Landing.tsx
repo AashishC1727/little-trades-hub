@@ -3,6 +3,7 @@ import AssetTicker from '@/components/AssetTicker';
 import ProblemSection from '@/components/ProblemSection';
 import DashboardPreview from '@/components/DashboardPreview';
 import WaitlistSection from '@/components/WaitlistSection';
+import Footer from '@/components/Footer';
 
 const Landing = () => {
   return (
@@ -12,6 +13,7 @@ const Landing = () => {
       <ProblemSection />
       <DashboardPreview />
       <WaitlistSection />
+      <Footer />
     </div>
   );
 };

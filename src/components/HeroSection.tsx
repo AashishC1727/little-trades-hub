@@ -59,8 +59,15 @@ const HeroSection = () => {
           </Button>
           
           <Button variant="outline" size="lg" className="text-lg px-8 py-6 rounded-full" onClick={() => window.location.href = '/dashboard'}>
-            View Dashboard
+            See Live Dashboard
           </Button>
+        </div>
+
+        {/* Demo Notice */}
+        <div className="mt-6 p-4 bg-muted/50 rounded-lg border">
+          <p className="text-sm text-muted-foreground">
+            👆 Click "See Live Dashboard" to view all 10 trading features we just built!
+          </p>
         </div>
 
         {/* Live Stats */}
