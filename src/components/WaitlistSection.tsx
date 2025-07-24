@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Mail, Check, ArrowRight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 const WaitlistSection = () => {
   const [email, setEmail] = useState('');
@@ -17,15 +18,37 @@ const WaitlistSection = () => {
 
     setIsLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitted(true);
-      setIsLoading(false);
+    try {
+      const { error } = await supabase
+        .from('waitlist')
+        .insert([{ email }]);
+
+      if (error) {
+        if (error.code === '23505') { // Unique violation
+          toast({
+            title: "Already subscribed!",
+            description: "This email is already on our waitlist.",
+            variant: "destructive"
+          });
+        } else {
+          throw error;
+        }
+      } else {
+        setIsSubmitted(true);
+        toast({
+          title: "Welcome to the future! 🚀",
+          description: "You're now on the waitlist. We'll notify you when LITTLE little launches.",
+        });
+      }
+    } catch (error) {
       toast({
-        title: "Welcome to the future! 🚀",
-        description: "You're now on the waitlist. We'll notify you when LITTLE little launches.",
+        title: "Something went wrong",
+        description: "Please try again later.",
+        variant: "destructive"
       });
-    }, 1000);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
