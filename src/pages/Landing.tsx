@@ -8,6 +8,7 @@ import AssetDiscoveryPreview from '@/components/AssetDiscoveryPreview';
 import ProModePreview from '@/components/ProModePreview';
 import WaitlistSection from '@/components/WaitlistSection';
 import Footer from '@/components/Footer';
+import CookieConsent from '@/components/CookieConsent';
 
 const Landing = () => {
   return (
@@ -24,6 +25,7 @@ const Landing = () => {
       <ProModePreview />
       <WaitlistSection />
       <Footer />
+      <CookieConsent />
     </div>
   );
 };

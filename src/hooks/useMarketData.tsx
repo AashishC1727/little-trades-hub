@@ -44,8 +44,8 @@ export const useMarketData = (symbols: string[], type: 'crypto' | 'stock' | 'for
   useEffect(() => {
     fetchMarketData();
     
-    // Refresh every 2 seconds for live updates
-    const interval = setInterval(fetchMarketData, 2000);
+    // Refresh every 5 seconds for real-time updates
+    const interval = setInterval(fetchMarketData, 5000);
     return () => clearInterval(interval);
   }, [symbols.join(','), type]);
 
