@@ -33,16 +33,17 @@ export const ArticleCard = ({
   };
 
   return (
-    <Card 
-      className="group hover:shadow-lg transition-all duration-300 hover-scale cursor-pointer animate-fade-in"
+    <article 
+      className="group cursor-pointer animate-fade-in border-b border-border/20 pb-8 mb-8 last:border-b-0 hover:border-border/40 transition-colors"
       style={style}
+      onClick={() => window.location.href = link}
     >
       {image && (
-        <div className="aspect-video bg-muted rounded-t-lg overflow-hidden">
+        <div className="mb-6 overflow-hidden rounded-lg bg-muted">
           <img 
             src={image} 
             alt={title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
             onError={(e) => {
               const target = e.target as HTMLImageElement;
               target.style.display = 'none';
@@ -52,42 +53,23 @@ export const ArticleCard = ({
         </div>
       )}
       
-      <CardHeader>
-        {(category || date) && (
-          <div className="flex items-center justify-between mb-2">
-            {category && (
-              <Badge variant="secondary" className="capitalize">
-                {category}
-              </Badge>
-            )}
-            {date && (
-              <div className="flex items-center text-sm text-muted-foreground">
-                <Clock className="w-4 h-4 mr-1" />
-                {formatDate(date)}
-              </div>
-            )}
+      <div className="space-y-4">
+        {(date || category) && (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            {date && <span>{formatDate(date)}</span>}
+            {date && category && <span>•</span>}
+            {category && <span>{category}</span>}
           </div>
         )}
         
-        <CardTitle className="group-hover:text-primary transition-colors line-clamp-2">
+        <h2 className="text-2xl font-bold text-foreground group-hover:text-primary transition-colors leading-tight">
           {title}
-        </CardTitle>
+        </h2>
         
-        <CardDescription className="line-clamp-3">
+        <p className="text-muted-foreground leading-relaxed">
           {excerpt}
-        </CardDescription>
-      </CardHeader>
-      
-      <CardContent>
-        <Button 
-          variant="ghost" 
-          className="w-full justify-between group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
-          onClick={() => window.location.href = link}
-        >
-          Read More
-          <ArrowRight className="w-4 h-4" />
-        </Button>
-      </CardContent>
-    </Card>
+        </p>
+      </div>
+    </article>
   );
 };

@@ -22,6 +22,7 @@ import Support from "./pages/Support";
 import EnhancedSupport from "./pages/EnhancedSupport";
 import Learn from "./pages/Learn";
 import LearnLibrary from "./pages/LearnLibrary";
+import WelcomeInvesting from "./pages/WelcomeInvesting";
 import HelpCenter from "./pages/HelpCenter";
 import ApiDocs from "./pages/ApiDocs";
 import SystemStatus from "./pages/SystemStatus";
@@ -56,6 +57,7 @@ const App = () => (
         <Route path="/support" element={<EnhancedSupport />} />
         <Route path="/learn" element={<Learn />} />
         <Route path="/learn-library" element={<LearnLibrary />} />
+        <Route path="/learn/welcome-investing-101" element={<WelcomeInvesting />} />
             <Route path="/help" element={<HelpCenter />} />
             <Route path="/api-docs" element={<ApiDocs />} />
             <Route path="/status" element={<SystemStatus />} />
