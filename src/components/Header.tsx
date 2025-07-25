@@ -150,23 +150,20 @@ const Header = () => {
           {/* Auth Buttons */}
           <div className="flex items-center space-x-4">
             <div className="hidden sm:flex items-center space-x-2">
-              {!user ? (
-                <>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => navigate('/auth')}
-                  >
-                    Login
-                  </Button>
-                  <Button 
-                    size="sm"
-                    onClick={() => navigate('/auth')}
-                  >
-                    Sign up
-                  </Button>
-                </>
-              ) : (
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => navigate('/auth')}
+              >
+                Login
+              </Button>
+              <Button 
+                size="sm"
+                onClick={() => navigate('/auth')}
+              >
+                Sign up
+              </Button>
+              {user && (
                 <Button 
                   variant="outline" 
                   size="sm"
@@ -236,31 +233,28 @@ const Header = () => {
 
               {/* Mobile Auth */}
               <div className="border-t pt-2 mt-2 space-y-2">
-                {!user ? (
-                  <>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        navigate('/auth');
-                        setMobileMenuOpen(false);
-                      }}
-                      className="w-full"
-                    >
-                      Login
-                    </Button>
-                    <Button
-                      size="sm"
-                      onClick={() => {
-                        navigate('/auth');
-                        setMobileMenuOpen(false);
-                      }}
-                      className="w-full"
-                    >
-                      Sign up
-                    </Button>
-                  </>
-                ) : (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    navigate('/auth');
+                    setMobileMenuOpen(false);
+                  }}
+                  className="w-full"
+                >
+                  Login
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    navigate('/auth');
+                    setMobileMenuOpen(false);
+                  }}
+                  className="w-full"
+                >
+                  Sign up
+                </Button>
+                {user && (
                   <Button
                     variant="outline"
                     size="sm"
