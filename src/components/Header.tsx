@@ -1,6 +1,9 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useToast } from '@/hooks/use-toast';
 import { 
   Search, 
   TrendingUp, 
@@ -15,6 +18,9 @@ import {
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { toast } = useToast();
 
   const navItems = [
     { label: 'Markets', href: '/markets', icon: TrendingUp },
@@ -25,15 +31,86 @@ const Header = () => {
     { label: 'About', href: '/about', icon: Info },
   ];
 
+  const handleNavigation = (href: string, label: string) => {
+    // Check for existing routes and handle navigation
+    const existingRoutes = ['/dashboard', '/auth'];
+    
+    if (existingRoutes.includes(href)) {
+      navigate(href);
+    } else if (href === '/portfolio') {
+      if (!user) {
+        navigate('/auth');
+        toast({
+          title: "Authentication Required",
+          description: "Log in to view your portfolio"
+        });
+      } else {
+        toast({
+          title: "Coming Soon",
+          description: "Portfolio view is being built"
+        });
+      }
+    } else if (href === '/markets') {
+      toast({
+        title: "Coming Soon",
+        description: "Global markets in one view"
+      });
+    } else if (href === '/trade') {
+      toast({
+        title: "Coming Soon",
+        description: "Launching trading terminal soon"
+      });
+    } else if (href === '/discover') {
+      toast({
+        title: "Coming Soon",
+        description: "Asset discovery coming soon"
+      });
+    } else {
+      toast({
+        title: "Coming Soon",
+        description: `${label} page is being built`
+      });
+    }
+  };
+
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      navigate(`/search-results?query=${encodeURIComponent(searchQuery)}`);
+    } else {
+      toast({
+        title: "Search Error",
+        description: "Please enter a search term"
+      });
+    }
+  };
+
+  const handleSearchKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
+  const handleStartTrading = () => {
+    if (user) {
+      navigate('/trade');
+    } else {
+      navigate('/auth');
+      toast({
+        title: "Account Required",
+        description: "Create an account to start trading"
+      });
+    }
+  };
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <div className="flex items-center space-x-2">
-            <a href="/" className="flex items-center space-x-2">
+            <button onClick={() => navigate('/')} className="flex items-center space-x-2">
               <h1 className="text-xl font-bold">LITTLE little</h1>
-            </a>
+            </button>
           </div>
 
           {/* Desktop Navigation */}
@@ -46,7 +123,7 @@ const Header = () => {
                   variant="ghost"
                   size="sm"
                   className="flex items-center space-x-2"
-                  onClick={() => window.location.href = item.href}
+                  onClick={() => handleNavigation(item.href, item.label)}
                 >
                   <Icon className="w-4 h-4" />
                   <span>{item.label}</span>
@@ -64,6 +141,7 @@ const Header = () => {
                 placeholder="Search assets... (Tesla, BTC, Whisky)"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyPress={handleSearchKeyPress}
                 className="pl-10 pr-4"
               />
             </div>
@@ -72,22 +150,34 @@ const Header = () => {
           {/* Auth Buttons */}
           <div className="flex items-center space-x-4">
             <div className="hidden sm:flex items-center space-x-2">
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => window.location.href = '/auth'}
-              >
-                Login
-              </Button>
-              <Button 
-                size="sm"
-                onClick={() => window.location.href = '/auth'}
-              >
-                Sign up
-              </Button>
+              {!user ? (
+                <>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => navigate('/auth')}
+                  >
+                    Login
+                  </Button>
+                  <Button 
+                    size="sm"
+                    onClick={() => navigate('/auth')}
+                  >
+                    Sign up
+                  </Button>
+                </>
+              ) : (
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => navigate('/dashboard')}
+                >
+                  Dashboard
+                </Button>
+              )}
               <Button 
                 className="bg-primary hover:bg-primary/90"
-                onClick={() => window.location.href = '/trade'}
+                onClick={handleStartTrading}
               >
                 Start Trading
               </Button>
@@ -118,6 +208,7 @@ const Header = () => {
                     placeholder="Search assets..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyPress={handleSearchKeyPress}
                     className="pl-10 pr-4"
                   />
                 </div>
@@ -132,7 +223,7 @@ const Header = () => {
                     variant="ghost"
                     size="sm"
                     onClick={() => {
-                      window.location.href = item.href;
+                      handleNavigation(item.href, item.label);
                       setMobileMenuOpen(false);
                     }}
                     className="w-full justify-start space-x-2"
@@ -145,31 +236,47 @@ const Header = () => {
 
               {/* Mobile Auth */}
               <div className="border-t pt-2 mt-2 space-y-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    window.location.href = '/auth';
-                    setMobileMenuOpen(false);
-                  }}
-                  className="w-full"
-                >
-                  Login
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={() => {
-                    window.location.href = '/auth';
-                    setMobileMenuOpen(false);
-                  }}
-                  className="w-full"
-                >
-                  Sign up
-                </Button>
+                {!user ? (
+                  <>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        navigate('/auth');
+                        setMobileMenuOpen(false);
+                      }}
+                      className="w-full"
+                    >
+                      Login
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        navigate('/auth');
+                        setMobileMenuOpen(false);
+                      }}
+                      className="w-full"
+                    >
+                      Sign up
+                    </Button>
+                  </>
+                ) : (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      navigate('/dashboard');
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full"
+                  >
+                    Dashboard
+                  </Button>
+                )}
                 <Button
                   className="w-full bg-primary hover:bg-primary/90"
                   onClick={() => {
-                    window.location.href = '/trade';
+                    handleStartTrading();
                     setMobileMenuOpen(false);
                   }}
                 >

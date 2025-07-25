@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
@@ -11,10 +11,24 @@ import { useToast } from '@/hooks/use-toast';
 const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [resetEmail, setResetEmail] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signUp, signIn } = useAuth();
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [showMagicLink, setShowMagicLink] = useState(false);
+  const { signUp, signIn, resetPassword, signInWithOtp, user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard');
+      toast({
+        title: "Welcome back!",
+        description: `Welcome back, ${user.email}`
+      });
+    }
+  }, [user, navigate, toast]);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,7 +45,7 @@ const Auth = () => {
     } else {
       toast({
         title: "Account created successfully!",
-        description: "You can now sign in with your credentials."
+        description: "Check your email to verify your account, then sign in."
       });
     }
     
@@ -51,11 +65,138 @@ const Auth = () => {
         variant: "destructive"
       });
     } else {
-      navigate('/');
+      navigate('/dashboard');
+      toast({
+        title: "Welcome back!",
+        description: `Welcome back, ${user.email}`
+      });
     }
     
     setLoading(false);
   };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    
+    const { error } = await resetPassword(resetEmail);
+    
+    if (error) {
+      toast({
+        title: "Reset failed",
+        description: "Couldn't send reset email. Try again or contact support",
+        variant: "destructive"
+      });
+    } else {
+      toast({
+        title: "Reset email sent!",
+        description: "Check your inbox for password reset instructions"
+      });
+      setShowForgotPassword(false);
+      setResetEmail('');
+    }
+    
+    setLoading(false);
+  };
+
+  const handleMagicLink = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    
+    const { error } = await signInWithOtp(email);
+    
+    if (error) {
+      toast({
+        title: "Magic link failed",
+        description: error.message,
+        variant: "destructive"
+      });
+    } else {
+      toast({
+        title: "Magic link sent!",
+        description: "Magic link sent to your email. Check your inbox"
+      });
+      setShowMagicLink(false);
+    }
+    
+    setLoading(false);
+  };
+
+  if (showForgotPassword) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl font-bold">Reset Password</CardTitle>
+            <CardDescription>Enter your email to receive reset instructions</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleForgotPassword} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="resetEmail">Email</Label>
+                <Input
+                  id="resetEmail"
+                  type="email"
+                  value={resetEmail}
+                  onChange={(e) => setResetEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? 'Sending...' : 'Send Reset Email'}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                onClick={() => setShowForgotPassword(false)}
+              >
+                Back to Sign In
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (showMagicLink) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl font-bold">Magic Link</CardTitle>
+            <CardDescription>Sign in with a magic link sent to your email</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleMagicLink} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="magicEmail">Email</Label>
+                <Input
+                  id="magicEmail"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? 'Sending...' : 'Send Magic Link'}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                onClick={() => setShowMagicLink(false)}
+              >
+                Back to Sign In
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
@@ -96,6 +237,25 @@ const Auth = () => {
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? 'Signing in...' : 'Sign In'}
                 </Button>
+                
+                <div className="space-y-2 pt-4 border-t">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="w-full text-sm"
+                    onClick={() => setShowForgotPassword(true)}
+                  >
+                    Forgot Password?
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full text-sm"
+                    onClick={() => setShowMagicLink(true)}
+                  >
+                    Sign in with Magic Link
+                  </Button>
+                </div>
               </form>
             </TabsContent>
             
