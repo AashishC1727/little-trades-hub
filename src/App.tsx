@@ -18,6 +18,11 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Terms from "./pages/Terms";
 import CookiePolicy from "./pages/CookiePolicy";
 import Accessibility from "./pages/Accessibility";
+import Support from "./pages/Support";
+import HelpCenter from "./pages/HelpCenter";
+import ApiDocs from "./pages/ApiDocs";
+import SystemStatus from "./pages/SystemStatus";
+import Security from "./pages/Security";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +50,11 @@ const App = () => (
             <Route path="/terms" element={<Terms />} />
             <Route path="/cookie-policy" element={<CookiePolicy />} />
             <Route path="/accessibility" element={<Accessibility />} />
+            <Route path="/support" element={<Support />} />
+            <Route path="/help" element={<HelpCenter />} />
+            <Route path="/api-docs" element={<ApiDocs />} />
+            <Route path="/status" element={<SystemStatus />} />
+            <Route path="/security" element={<Security />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

@@ -24,9 +24,7 @@ const Footer = () => {
             <div className="mb-6">
               <h3 className="text-xl font-bold mb-2">LITTLE little</h3>
               <p className="text-muted-foreground text-sm leading-relaxed">
-                Trade anything. From LITTLE to little. The future of accessible, 
-                intelligent trading is here. Start with as little as $1 and scale 
-                to millions.
+                Trade anything. From little to LITTLE. If it's got a price, we trade it.
               </p>
             </div>
             
@@ -75,9 +73,6 @@ const Footer = () => {
               </a>
               <a href="/contact" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Contact
-              </a>
-              <a href="/careers" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">
-                Careers
               </a>
               <a href="/blog" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Blog
