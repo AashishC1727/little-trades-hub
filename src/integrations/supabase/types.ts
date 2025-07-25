@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      market_data_cache: {
+        Row: {
+          created_at: string
+          data: Json
+          fetched_at: string
+          symbol: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data: Json
+          fetched_at?: string
+          symbol: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          fetched_at?: string
+          symbol?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       portfolios: {
         Row: {
           asset_symbol: string | null
