@@ -5,6 +5,7 @@ import { ArticleList } from "@/components/ArticleList";
 import { FeaturePanel } from "@/components/FeaturePanel";
 import { Button } from "@/components/ui/button";
 import { BookOpen, GraduationCap, ArrowRight } from "lucide-react";
+import learnHero from "@/assets/learn-hero.jpg";
 
 const Learn = () => {
   return (
@@ -12,8 +13,18 @@ const Learn = () => {
       <Header />
       <main className="pt-16">
         {/* Custom Hero Section for Learn */}
-        <section className="py-20 px-4 bg-gradient-to-br from-primary/10 via-background to-secondary/10">
-          <div className="max-w-7xl mx-auto text-center">
+        <section className="relative py-20 px-4 bg-gradient-to-br from-primary/10 via-background to-secondary/10 overflow-hidden">
+          {/* Background Image */}
+          <div className="absolute inset-0">
+            <img 
+              src={learnHero} 
+              alt="Learning hero background" 
+              className="w-full h-full object-cover opacity-20"
+            />
+            <div className="absolute inset-0 bg-background/80" />
+          </div>
+          
+          <div className="relative z-10 max-w-7xl mx-auto text-center">
             <div className="mb-8 animate-fade-in">
               <div className="flex items-center justify-center mb-6">
                 <div className="w-16 h-16 bg-primary/20 rounded-lg flex items-center justify-center">

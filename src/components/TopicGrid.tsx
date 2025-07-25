@@ -1,26 +1,32 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { TrendingUp, BarChart3, Target, BookOpen, Calculator, Shield } from "lucide-react";
+import investingBasics from "@/assets/investing-basics.jpg";
+import optionsGuide from "@/assets/options-guide.jpg";
+import futuresExplained from "@/assets/futures-explained.jpg";
 
 const topics = [
   {
     title: "Investing Basics",
     description: "Learn the fundamentals of investing and building wealth",
     icon: TrendingUp,
+    image: investingBasics,
     color: "text-primary",
     bgColor: "bg-primary/10"
   },
   {
-    title: "Options Trading",
+    title: "Options",
     description: "Master options strategies and risk management",
     icon: BarChart3,
+    image: optionsGuide,
     color: "text-secondary",
     bgColor: "bg-secondary/10"
   },
   {
-    title: "Futures Trading",
+    title: "Futures",
     description: "Understand futures markets and trading techniques",
     icon: Target,
+    image: futuresExplained,
     color: "text-accent",
     bgColor: "bg-accent/10"
   },
@@ -67,6 +73,15 @@ export const TopicGrid = () => {
                 className="group hover:shadow-lg transition-all duration-300 hover-scale cursor-pointer"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
+                {topic.image && (
+                  <div className="aspect-video bg-muted rounded-t-lg overflow-hidden">
+                    <img 
+                      src={topic.image} 
+                      alt={topic.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                )}
                 <CardHeader>
                   <div className={`w-16 h-16 rounded-lg ${topic.bgColor} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
                     <IconComponent className={`w-8 h-8 ${topic.color}`} />

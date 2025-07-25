@@ -1,9 +1,24 @@
 import { Button } from '@/components/ui/button';
 import { ArrowRight, TrendingUp, Zap, Shield } from 'lucide-react';
 
-const HeroSection = () => {
+interface HeroSectionProps {
+  image?: string;
+}
+
+const HeroSection = ({ image }: HeroSectionProps) => {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background">
+      {/* Background Image */}
+      {image && (
+        <div className="absolute inset-0">
+          <img 
+            src={image} 
+            alt="Hero background" 
+            className="w-full h-full object-cover opacity-20"
+          />
+          <div className="absolute inset-0 bg-background/80" />
+        </div>
+      )}
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-gradient-to-br from-background via-secondary/20 to-background" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(0,0,0,0.1),transparent)]" />
