@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { useMarketData } from '@/hooks/useMarketData';
 import { TrendingUp, TrendingDown, Bitcoin, Building2, Gem } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -9,13 +10,25 @@ const LiveMarketTicker = () => {
   const { data: cryptoData } = useMarketData(cryptoSymbols, 'crypto');
   const { data: stockData } = useMarketData(stockSymbols, 'stock');
 
-  // Mock collectibles data for now
-  const collectiblesData = [
+  // Mock collectibles data that changes randomly
+  const [collectiblesData, setCollectiblesData] = useState([
     { name: 'Rare Jordan 1s', price: 2300, change24h: 5.1, category: 'Sneakers' },
     { name: 'Pokemon Charizard', price: 8500, change24h: -2.3, category: 'Cards' },
     { name: 'Rolex Submariner', price: 12500, change24h: 3.7, category: 'Watches' },
     { name: 'Art Basel Print', price: 4200, change24h: 1.8, category: 'Art' },
-  ];
+  ]);
+
+  // Simulate live price changes for collectibles
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCollectiblesData(prev => prev.map(item => ({
+        ...item,
+        price: item.price * (1 + (Math.random() - 0.5) * 0.02), // ±1% random change
+        change24h: item.change24h + (Math.random() - 0.5) * 0.5 // slight change variation
+      })));
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Combine all market data
   const allMarketData = [
@@ -55,7 +68,10 @@ const LiveMarketTicker = () => {
   };
 
   return (
-    <div className="bg-muted/30 border-y border-border py-3 overflow-hidden">
+    <section className="bg-muted/30 border-y border-border py-4 overflow-hidden">
+      <div className="container mx-auto px-4 mb-2">
+        <h3 className="text-lg font-semibold text-center">Live Market Data</h3>
+      </div>
       <div className="flex animate-marquee whitespace-nowrap space-x-8">
         {/* Duplicate the array to create seamless loop */}
         {[...allMarketData, ...allMarketData].map((item, index) => (
@@ -82,7 +98,7 @@ const LiveMarketTicker = () => {
           </div>
         ))}
       </div>
-    </div>
+    </section>
   );
 };
 

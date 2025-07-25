@@ -113,7 +113,12 @@ const MarketPulseTicker = () => {
   const currentHeadline = headlines[currentIndex];
 
   return (
-    <Card className="p-6 bg-gradient-to-r from-primary/5 to-secondary/5 border-primary/20 relative overflow-hidden">
+    <section>
+      <div className="text-center mb-6">
+        <h3 className="text-2xl font-bold">Live Financial Headlines</h3>
+        <p className="text-muted-foreground">Breaking news from global financial markets</p>
+      </div>
+      <Card className="p-6 bg-gradient-to-r from-primary/5 to-secondary/5 border-primary/20 relative overflow-hidden">
       <div className="flex items-center justify-between">
         <div className="flex-1 min-w-0">
           <div className="flex items-center space-x-3 mb-2">
@@ -165,6 +170,7 @@ const MarketPulseTicker = () => {
         />
       </div>
     </Card>
+    </section>
   );
 };
 
