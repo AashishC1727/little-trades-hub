@@ -91,7 +91,7 @@ const LiveNewsfeed = () => {
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-6 flex items-center justify-center">
               <Globe className="w-8 h-8 mr-4 text-primary" />
-              Live Market Pulse
+              Live Headlines
             </h2>
             <p className="text-xl text-muted-foreground">Loading real-time market news...</p>
           </div>
@@ -106,7 +106,7 @@ const LiveNewsfeed = () => {
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-6 flex items-center justify-center">
             <Globe className="w-8 h-8 mr-4 text-primary" />
-            Live Market Pulse
+            Live Headlines
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Stay updated with real-time headlines from global markets, crypto, and alternative assets.
