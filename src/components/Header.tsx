@@ -10,7 +10,7 @@ import {
   BarChart3, 
   Compass, 
   GraduationCap, 
-  Info,
+  HelpCircle,
   Menu,
   X
 } from 'lucide-react';
@@ -28,12 +28,12 @@ const Header = () => {
     { label: 'Portfolio', href: '/portfolio', icon: BarChart3 },
     { label: 'Discover', href: '/discover', icon: Compass },
     { label: 'Learn', href: '/learn', icon: GraduationCap },
-    { label: 'About', href: '/about', icon: Info },
+    { label: 'Support', href: '/support', icon: HelpCircle },
   ];
 
   const handleNavigation = (href: string, label: string) => {
     // Check for existing routes and handle navigation
-    const existingRoutes = ['/dashboard', '/auth'];
+    const existingRoutes = ['/dashboard', '/auth', '/learn', '/support', '/about'];
     
     if (existingRoutes.includes(href)) {
       navigate(href);
@@ -66,10 +66,8 @@ const Header = () => {
         description: "Asset discovery coming soon"
       });
     } else {
-      toast({
-        title: "Coming Soon",
-        description: `${label} page is being built`
-      });
+      // For any other routes, try to navigate first
+      navigate(href);
     }
   };
 

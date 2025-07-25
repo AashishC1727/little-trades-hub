@@ -19,6 +19,7 @@ import Terms from "./pages/Terms";
 import CookiePolicy from "./pages/CookiePolicy";
 import Accessibility from "./pages/Accessibility";
 import Support from "./pages/Support";
+import EnhancedSupport from "./pages/EnhancedSupport";
 import Learn from "./pages/Learn";
 import LearnLibrary from "./pages/LearnLibrary";
 import HelpCenter from "./pages/HelpCenter";
@@ -52,7 +53,7 @@ const App = () => (
             <Route path="/terms" element={<Terms />} />
             <Route path="/cookie-policy" element={<CookiePolicy />} />
             <Route path="/accessibility" element={<Accessibility />} />
-        <Route path="/support" element={<Support />} />
+        <Route path="/support" element={<EnhancedSupport />} />
         <Route path="/learn" element={<Learn />} />
         <Route path="/learn-library" element={<LearnLibrary />} />
             <Route path="/help" element={<HelpCenter />} />
