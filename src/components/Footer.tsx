@@ -57,7 +57,12 @@ const Footer = () => {
               </Button>
               <Button variant="ghost" size="sm" className="p-2" asChild>
                 <a href="https://snapchat.com/add/aaassseeesss" target="_blank" rel="noopener noreferrer">
-                  <img src={snapchatIcon} alt="Snapchat" className="w-4 h-4" />
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                    <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z"/>
+                    <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+                    <path d="M9 9h.01"/>
+                    <path d="M15 9h.01"/>
+                  </svg>
                 </a>
               </Button>
               <Button variant="ghost" size="sm" className="p-2" asChild>
@@ -175,7 +180,12 @@ const Footer = () => {
               <div className="flex items-center space-x-4">
                 <CreditCard className="w-6 h-6 text-muted-foreground" />
                 <img src={visaLogo} alt="Visa" className="w-12 h-8 object-contain" />
-                <img src={mastercardLogo} alt="Mastercard" className="w-12 h-8 object-contain" />
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="32" viewBox="0 0 48 32" className="w-12 h-8">
+                  <rect width="48" height="32" rx="4" fill="none" stroke="currentColor" strokeWidth="1"/>
+                  <circle cx="18" cy="16" r="8" fill="#eb001b"/>
+                  <circle cx="30" cy="16" r="8" fill="#f79e1b"/>
+                  <path d="M24 8a8 8 0 0 0 0 16 8 8 0 0 0 0-16z" fill="#ff5f00"/>
+                </svg>
                 <img src={paypalLogo} alt="PayPal" className="w-12 h-8 object-contain" />
               </div>
             </div>
