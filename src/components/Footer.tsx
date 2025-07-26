@@ -57,7 +57,7 @@ const Footer = () => {
               </Button>
               <Button variant="ghost" size="sm" className="p-2" asChild>
                 <a href="https://snapchat.com/add/aaassseeesss" target="_blank" rel="noopener noreferrer">
-                  <img src={snapchatIcon} alt="Snapchat" className="w-4 h-4" />
+                  <img src={snapchatIcon} alt="Snapchat" className="w-5 h-5" />
                 </a>
               </Button>
               <Button variant="ghost" size="sm" className="p-2" asChild>
@@ -172,19 +172,11 @@ const Footer = () => {
           <div className="flex flex-col lg:flex-row items-center justify-between mt-6 pt-6 border-t">
             <div className="flex items-center space-x-4 mb-4 lg:mb-0">
               <span className="text-sm text-muted-foreground">Secure payments:</span>
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-6 bg-muted rounded flex items-center justify-center">
-                  <CreditCard className="w-5 h-5" />
-                </div>
-                <div className="w-12 h-8 bg-white rounded flex items-center justify-center border">
-                  <img src={visaLogo} alt="Visa" className="w-10 h-5 object-contain" />
-                </div>
-                <div className="w-12 h-8 bg-white rounded flex items-center justify-center border">
-                  <img src={mastercardLogo} alt="Mastercard" className="w-10 h-5 object-contain" />
-                </div>
-                <div className="w-12 h-8 bg-white rounded flex items-center justify-center border">
-                  <img src={paypalLogo} alt="PayPal" className="w-10 h-5 object-contain" />
-                </div>
+              <div className="flex items-center space-x-4">
+                <CreditCard className="w-6 h-6 text-muted-foreground" />
+                <img src={visaLogo} alt="Visa" className="w-8 h-5 object-contain" />
+                <img src={mastercardLogo} alt="Mastercard" className="w-8 h-5 object-contain" />
+                <img src={paypalLogo} alt="PayPal" className="w-8 h-5 object-contain" />
               </div>
             </div>
 
