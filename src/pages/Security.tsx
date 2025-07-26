@@ -38,7 +38,7 @@ const Security = () => {
           <div className="grid md:grid-cols-3 gap-6 mb-12">
             <Card>
               <CardContent className="p-6 text-centre">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-centre justify-centre mx-auto mb-4">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Shield className="w-8 h-8 text-green-600" />
                 </div>
                 <h3 className="font-semibold mb-2">Bank-Level Security</h3>
@@ -50,7 +50,7 @@ const Security = () => {
 
             <Card>
               <CardContent className="p-6 text-centre">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-centre justify-centre mx-auto mb-4">
+                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <FileCheck className="w-8 h-8 text-blue-600" />
                 </div>
                 <h3 className="font-semibold mb-2">FCA Regulated</h3>
@@ -62,7 +62,7 @@ const Security = () => {
 
             <Card>
               <CardContent className="p-6 text-centre">
-                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-centre justify-centre mx-auto mb-4">
+                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Database className="w-8 h-8 text-purple-600" />
                 </div>
                 <h3 className="font-semibold mb-2">Fund Protection</h3>
@@ -327,7 +327,7 @@ const Security = () => {
                       If you've discovered a security vulnerability, please report it through our secure channel.
                     </p>
                     <div className="space-y-2 text-sm text-orange-800">
-                      <p><strong>Email:</strong> security@littlelittle.com</p>
+                      <p><strong>Email:</strong> Ashish.choudhary@littlelittle.com</p>
                       <p><strong>PGP Key:</strong> Available upon request</p>
                       <p><strong>Response Time:</strong> Within 24 hours</p>
                     </div>

@@ -30,6 +30,14 @@ const CookieConsent = () => {
     if (!consent) {
       setShowBanner(true);
     }
+
+    // Listen for cookie settings open events
+    const handleOpenSettings = () => {
+      setShowSettings(true);
+    };
+
+    window.addEventListener('open-cookie-settings', handleOpenSettings);
+    return () => window.removeEventListener('open-cookie-settings', handleOpenSettings);
   }, []);
 
   const handleAcceptAll = () => {

@@ -35,7 +35,7 @@ const ApiDocs = () => {
           <div className="grid md:grid-cols-4 gap-6 mb-12">
             <Card>
               <CardContent className="p-6 text-centre">
-                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-centre justify-centre mx-auto mb-4">
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Key className="w-8 h-8 text-primary" />
                 </div>
                 <h3 className="font-semibold mb-2">Get API Keys</h3>
@@ -47,7 +47,7 @@ const ApiDocs = () => {
 
             <Card>
               <CardContent className="p-6 text-centre">
-                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-centre justify-centre mx-auto mb-4">
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Code className="w-8 h-8 text-primary" />
                 </div>
                 <h3 className="font-semibold mb-2">Quick Start</h3>
@@ -59,7 +59,7 @@ const ApiDocs = () => {
 
             <Card>
               <CardContent className="p-6 text-centre">
-                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-centre justify-centre mx-auto mb-4">
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <FileText className="w-8 h-8 text-primary" />
                 </div>
                 <h3 className="font-semibold mb-2">Reference</h3>
@@ -71,7 +71,7 @@ const ApiDocs = () => {
 
             <Card>
               <CardContent className="p-6 text-centre">
-                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-centre justify-centre mx-auto mb-4">
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Zap className="w-8 h-8 text-primary" />
                 </div>
                 <h3 className="font-semibold mb-2">Examples</h3>

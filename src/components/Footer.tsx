@@ -53,7 +53,17 @@ const Footer = () => {
               </Button>
               <Button variant="ghost" size="sm" className="p-2" asChild>
                 <a href="https://snapchat.com/add/aaassseeesss" target="_blank" rel="noopener noreferrer">
-                  <span className="w-4 h-4 text-xs font-bold">SC</span>
+                  <img src="/src/assets/snapchat-icon.png" alt="Snapchat" className="w-4 h-4" />
+                </a>
+              </Button>
+              <Button variant="ghost" size="sm" className="p-2" asChild>
+                <a href="https://www.linkedin.com/in/ashish-choudhary-2017uar1727/" target="_blank" rel="noopener noreferrer">
+                  <Linkedin className="w-4 h-4" />
+                </a>
+              </Button>
+              <Button variant="ghost" size="sm" className="p-2" asChild>
+                <a href="https://github.com/AashishC1727/little-little-backend" target="_blank" rel="noopener noreferrer">
+                  <Github className="w-4 h-4" />
                 </a>
               </Button>
               <Button variant="ghost" size="sm" className="p-2" asChild>
@@ -87,15 +97,18 @@ const Footer = () => {
           <div>
             <h4 className="font-semibold mb-4">Legal</h4>
             <div className="space-y-2">
-              <a href="/privacy" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <a href="/privacy-policy" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Privacy Policy
               </a>
               <a href="/terms" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Terms & Conditions
               </a>
-              <a href="/cookies" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <button 
+                onClick={() => window.dispatchEvent(new CustomEvent('open-cookie-settings'))}
+                className="block text-sm text-muted-foreground hover:text-foreground transition-colors text-left"
+              >
                 Cookie Policy
-              </a>
+              </button>
               <a href="/accessibility" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Accessibility
               </a>
@@ -159,14 +172,14 @@ const Footer = () => {
                 <div className="w-8 h-5 bg-muted rounded flex items-center justify-center">
                   <CreditCard className="w-3 h-3" />
                 </div>
-                <div className="w-8 h-5 bg-muted rounded flex items-center justify-center text-xs font-bold">
-                  V
+                <div className="w-10 h-6 bg-white rounded flex items-center justify-center">
+                  <img src="/src/assets/visa-logo.png" alt="Visa" className="w-8 h-3 object-contain" />
                 </div>
-                <div className="w-8 h-5 bg-muted rounded flex items-center justify-center text-xs font-bold">
-                  MC
+                <div className="w-10 h-6 bg-white rounded flex items-center justify-center">
+                  <img src="/src/assets/mastercard-logo.png" alt="Mastercard" className="w-8 h-3 object-contain" />
                 </div>
-                <div className="w-8 h-5 bg-muted rounded flex items-center justify-center text-xs font-bold">
-                  PP
+                <div className="w-10 h-6 bg-white rounded flex items-center justify-center">
+                  <img src="/src/assets/paypal-logo.png" alt="PayPal" className="w-8 h-3 object-contain" />
                 </div>
               </div>
             </div>

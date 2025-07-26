@@ -76,7 +76,7 @@ const Contact = () => {
                     <Mail className="w-5 h-5 text-primary mt-0.5" />
                     <div>
                       <p className="font-semibold">Email Support</p>
-                      <p className="text-sm text-muted-foreground">support@littlelittle.com</p>
+                      <p className="text-sm text-muted-foreground">Ashish.choudhary@littlelittle.com</p>
                       <p className="text-xs text-muted-foreground">24/7 email support</p>
                     </div>
                   </div>
@@ -96,7 +96,7 @@ const Contact = () => {
                       <p className="font-semibold">Office Address</p>
                       <p className="text-sm text-muted-foreground">
                         LITTLE little Ltd<br />
-                        London, United Kingdom
+                        We're homeless as of now
                       </p>
                     </div>
                   </div>

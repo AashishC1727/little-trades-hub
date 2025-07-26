@@ -123,7 +123,7 @@ const WaitlistSection = () => {
               </div>
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-success rounded-full animate-pulse-slow" />
-                <span className="text-sm font-medium">Launch Q2 2024</span>
+                <span className="text-sm font-medium">Launching soon</span>
               </div>
             </div>
           </div>

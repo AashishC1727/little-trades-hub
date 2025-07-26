@@ -246,9 +246,9 @@ const Accessibility = () => {
                   For accessibility support or to report accessibility issues, please contact us:
                 </p>
                 <div className="space-y-2 text-sm">
-                  <p><strong>Email:</strong> accessibility@littlelittle.com</p>
+                  <p><strong>Email:</strong> Ashish.choudhary@littlelittle.com</p>
                   <p><strong>Phone:</strong> +44 7766 081465</p>
-                  <p><strong>Address:</strong> LITTLE little Ltd, London, United Kingdom</p>
+                  <p><strong>Address:</strong> LITTLE little Ltd, We're homeless as of now</p>
                   <p><strong>Customer Support:</strong> Available 24/7 for accessibility assistance</p>
                 </div>
                 <p className="text-muted-foreground mt-4 text-sm">
