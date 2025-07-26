@@ -57,10 +57,8 @@ const Footer = () => {
               </Button>
               <Button variant="ghost" size="sm" className="p-2" asChild>
                 <a href="https://snapchat.com/add/aaassseeesss" target="_blank" rel="noopener noreferrer">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-                    <path d="M12 2c-2.2 0-4 1.8-4 4v3.5c0 1.1-.4 2.1-1.2 2.8-.4.4-.8.7-.8 1.2 0 .6.5 1 1.1 1h.4c.3 0 .5.2.5.5s-.2.5-.5.5c-.8 0-1.5.7-1.5 1.5s.7 1.5 1.5 1.5h12c.8 0 1.5-.7 1.5-1.5s-.7-1.5-1.5-1.5c-.3 0-.5-.2-.5-.5s.2-.5.5-.5h.4c.6 0 1.1-.4 1.1-1 0-.5-.4-.8-.8-1.2-.8-.7-1.2-1.7-1.2-2.8V6c0-2.2-1.8-4-4-4z"/>
-                    <path d="M8 18.5c.5.8 1.2 1.5 2 1.5s1.5-.7 2-1.5"/>
-                    <path d="M14 18.5c.5.8 1.2 1.5 2 1.5s1.5-.7 2-1.5"/>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+                    <path d="M12 0C8.74 0 7.14.75 7.14 3.5c0 .75.28 1.5.57 2.25.28.75.57 1.5.57 2.25 0 1.5-1.5 3-1.5 4.5 0 1.5 1.5 3 1.5 4.5 0 .75-.29 1.5-.57 2.25-.29.75-.57 1.5-.57 2.25 0 2.75 1.6 3.5 4.86 3.5s4.86-.75 4.86-3.5c0-.75-.28-1.5-.57-2.25-.28-.75-.57-1.5-.57-2.25 0-1.5 1.5-3 1.5-4.5 0-1.5-1.5-3-1.5-4.5 0-.75.29-1.5.57-2.25.29-.75.57-1.5.57-2.25C16.86.75 15.26 0 12 0zm-1.5 15.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm3 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z"/>
                   </svg>
                 </a>
               </Button>
