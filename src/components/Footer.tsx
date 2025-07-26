@@ -13,6 +13,10 @@ import {
   Globe,
   ChevronDown
 } from 'lucide-react';
+import snapchatIcon from '@/assets/snapchat-icon.png';
+import visaLogo from '@/assets/visa-logo.png';
+import mastercardLogo from '@/assets/mastercard-logo.png';
+import paypalLogo from '@/assets/paypal-logo.png';
 
 const Footer = () => {
   return (
@@ -53,7 +57,12 @@ const Footer = () => {
               </Button>
               <Button variant="ghost" size="sm" className="p-2" asChild>
                 <a href="https://snapchat.com/add/aaassseeesss" target="_blank" rel="noopener noreferrer">
-                  <img src="/src/assets/snapchat-icon.png" alt="Snapchat" className="w-4 h-4" />
+                  <img src={snapchatIcon} alt="Snapchat" className="w-4 h-4" />
+                </a>
+              </Button>
+              <Button variant="ghost" size="sm" className="p-2" asChild>
+                <a href="https://instagram.com/aaassseeesss" target="_blank" rel="noopener noreferrer">
+                  <Instagram className="w-4 h-4" />
                 </a>
               </Button>
               <Button variant="ghost" size="sm" className="p-2" asChild>
@@ -64,11 +73,6 @@ const Footer = () => {
               <Button variant="ghost" size="sm" className="p-2" asChild>
                 <a href="https://github.com/AashishC1727/little-little-backend" target="_blank" rel="noopener noreferrer">
                   <Github className="w-4 h-4" />
-                </a>
-              </Button>
-              <Button variant="ghost" size="sm" className="p-2" asChild>
-                <a href="https://instagram.com/aaassseeesss" target="_blank" rel="noopener noreferrer">
-                  <Instagram className="w-4 h-4" />
                 </a>
               </Button>
             </div>
@@ -169,17 +173,17 @@ const Footer = () => {
             <div className="flex items-center space-x-4 mb-4 lg:mb-0">
               <span className="text-sm text-muted-foreground">Secure payments:</span>
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-5 bg-muted rounded flex items-center justify-center">
-                  <CreditCard className="w-3 h-3" />
+                <div className="w-10 h-6 bg-muted rounded flex items-center justify-center">
+                  <CreditCard className="w-5 h-5" />
                 </div>
-                <div className="w-10 h-6 bg-white rounded flex items-center justify-center">
-                  <img src="/src/assets/visa-logo.png" alt="Visa" className="w-8 h-3 object-contain" />
+                <div className="w-12 h-8 bg-white rounded flex items-center justify-center border">
+                  <img src={visaLogo} alt="Visa" className="w-10 h-5 object-contain" />
                 </div>
-                <div className="w-10 h-6 bg-white rounded flex items-center justify-center">
-                  <img src="/src/assets/mastercard-logo.png" alt="Mastercard" className="w-8 h-3 object-contain" />
+                <div className="w-12 h-8 bg-white rounded flex items-center justify-center border">
+                  <img src={mastercardLogo} alt="Mastercard" className="w-10 h-5 object-contain" />
                 </div>
-                <div className="w-10 h-6 bg-white rounded flex items-center justify-center">
-                  <img src="/src/assets/paypal-logo.png" alt="PayPal" className="w-8 h-3 object-contain" />
+                <div className="w-12 h-8 bg-white rounded flex items-center justify-center border">
+                  <img src={paypalLogo} alt="PayPal" className="w-10 h-5 object-contain" />
                 </div>
               </div>
             </div>
