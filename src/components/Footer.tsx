@@ -57,7 +57,7 @@ const Footer = () => {
               </Button>
               <Button variant="ghost" size="sm" className="p-2" asChild>
                 <a href="https://snapchat.com/add/aaassseeesss" target="_blank" rel="noopener noreferrer">
-                  <img src={snapchatIcon} alt="Snapchat" className="w-5 h-5" />
+                  <img src={snapchatIcon} alt="Snapchat" className="w-4 h-4" />
                 </a>
               </Button>
               <Button variant="ghost" size="sm" className="p-2" asChild>
@@ -174,9 +174,9 @@ const Footer = () => {
               <span className="text-sm text-muted-foreground">Secure payments:</span>
               <div className="flex items-center space-x-4">
                 <CreditCard className="w-6 h-6 text-muted-foreground" />
-                <img src={visaLogo} alt="Visa" className="w-8 h-5 object-contain" />
-                <img src={mastercardLogo} alt="Mastercard" className="w-8 h-5 object-contain" />
-                <img src={paypalLogo} alt="PayPal" className="w-8 h-5 object-contain" />
+                <img src={visaLogo} alt="Visa" className="w-12 h-8 object-contain" />
+                <img src={mastercardLogo} alt="Mastercard" className="w-12 h-8 object-contain" />
+                <img src={paypalLogo} alt="PayPal" className="w-12 h-8 object-contain" />
               </div>
             </div>
 
