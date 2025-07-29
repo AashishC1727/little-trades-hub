@@ -53,18 +53,25 @@ const AssetDiscoveryPreview = () => {
     setSearchError(null);
     setHasSearched(true);
 
+    console.log('Search initiated with query:', query, 'category:', category);
+
+    // Check if the selected category is unsupported
+    const unsupportedCategories = ['commodities', 'fx', 'nfts', 'real estate'];
+    if (category && category.trim() && unsupportedCategories.includes(category.toLowerCase())) {
+      setSearchError(`${category} search is not currently supported. Please try searching for Crypto or Stocks instead.`);
+      setSearchResults([]);
+      setIsSearching(false);
+      return;
+    }
+
     try {
       const searchBody: any = { query };
 
-      // Add type filter if category is selected
-      if (category && category.toLowerCase() !== 'all') {
+      // Only add type filter if category is selected and maps to a valid backend type
+      if (category && category.trim() && category.toLowerCase() !== 'all') {
         const typeMap: { [key: string]: string } = {
           'crypto': 'crypto',
-          'stocks': 'stock',
-          'commodities': 'commodity',
-          'fx': 'forex',
-          'nfts': 'nft',
-          'real estate': 'realestate'
+          'stocks': 'stock'
         };
 
         const searchType = typeMap[category.toLowerCase()];
@@ -72,10 +79,13 @@ const AssetDiscoveryPreview = () => {
           searchBody.type = searchType;
         }
       }
+      // If no category is selected, don't add type to searchBody - let backend search all
 
       const { data, error } = await supabase.functions.invoke('asset-search', {
         body: searchBody
       });
+
+      console.log('Backend response:', data, 'error:', error);
 
       if (error) {
         setSearchError('Failed to search assets. Please try again.');
@@ -84,24 +94,20 @@ const AssetDiscoveryPreview = () => {
       }
 
       if (data?.success) {
-        let filteredResults = data.data;
-
-        // TEMPORARY: Add frontend filtering as a test
-        if (category && category.toLowerCase() === 'crypto') {
-          filteredResults = data.data.filter((result: SearchResult) => result.type === 'crypto');
-        } else if (category && category.toLowerCase() === 'stocks') {
-          filteredResults = data.data.filter((result: SearchResult) => result.type === 'stock');
-        }
-
-        setSearchResults(filteredResults);
-        if (filteredResults.length === 0 && data.message) {
+        // Use all results from backend - don't apply additional frontend filtering
+        // The backend already handles type filtering correctly
+        console.log('Search results received:', data.data);
+        setSearchResults(data.data || []);
+        if ((data.data || []).length === 0 && data.message) {
           setSearchError(data.message);
         }
       } else {
+        console.log('Search failed with response:', data);
         setSearchError(data?.error || 'Search failed');
         setSearchResults([]);
       }
     } catch (err) {
+      console.error('Search error:', err);
       setSearchError('Failed to search assets. Please try again.');
       setSearchResults([]);
     } finally {
@@ -110,7 +116,9 @@ const AssetDiscoveryPreview = () => {
   };
 
   const handleSearch = () => {
-    searchAssets(searchQuery, selectedCategory);
+    // Pass selectedCategory only if it's not empty, otherwise pass undefined
+    const categoryFilter = selectedCategory && selectedCategory.trim() ? selectedCategory : undefined;
+    searchAssets(searchQuery, categoryFilter);
   };
 
   const handleSearchKeyPress = (e: React.KeyboardEvent) => {
@@ -135,6 +143,7 @@ const AssetDiscoveryPreview = () => {
   };
 
   const formatPrice = (price: number, type: string) => {
+    if (!price || isNaN(price)) return 'N/A';
     if (type === 'crypto') {
       return price < 1 ? `$${price.toFixed(6)}` : `$${price.toLocaleString()}`;
     }
@@ -267,14 +276,14 @@ const AssetDiscoveryPreview = () => {
                                 />
                               )}
                               <div>
-                                <CardTitle className="text-lg">{result.symbol}</CardTitle>
+                                <CardTitle className="text-lg">{result.symbol || 'Unknown'}</CardTitle>
                                 <p className="text-sm text-muted-foreground truncate">
-                                  {result.name}
+                                  {result.name || 'Unknown Asset'}
                                 </p>
                               </div>
                             </div>
                             <Badge variant="outline" className={getTypeColor(result.type)}>
-                              {result.type.toUpperCase()}
+                              {(result.type || 'unknown').toUpperCase()}
                             </Badge>
                           </div>
                         </CardHeader>
@@ -283,19 +292,19 @@ const AssetDiscoveryPreview = () => {
                           <div className="flex items-center justify-between">
                             <div>
                               <div className="text-2xl font-bold">
-                                {formatPrice(result.price, result.type)}
+                                {result.price ? formatPrice(result.price, result.type) : 'N/A'}
                               </div>
                               <div className={cn(
                                 "flex items-center space-x-1 text-sm font-medium",
-                                result.change24h >= 0 ? "text-green-600" : "text-red-600"
+                                (result.change24h || 0) >= 0 ? "text-green-600" : "text-red-600"
                               )}>
-                                {result.change24h >= 0 ? (
+                                {(result.change24h || 0) >= 0 ? (
                                   <TrendingUp className="w-3 h-3" />
                                 ) : (
                                   <TrendingDown className="w-3 h-3" />
                                 )}
                                 <span>
-                                  {result.change24h >= 0 ? '+' : ''}{result.change24h.toFixed(2)}%
+                                  {(result.change24h || 0) >= 0 ? '+' : ''}{(result.change24h || 0).toFixed(2)}%
                                 </span>
                               </div>
                             </div>

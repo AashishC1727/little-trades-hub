@@ -61,29 +61,42 @@ serve(async (req) => {
     const searchTerm = query.trim().toLowerCase();
     const searchType = type?.toLowerCase();
 
-    // Search in multiple sources
+    const unsupportedTypes = ['commodity', 'forex', 'fx', 'nft', 'realestate', 'real-estate'];
+    if (searchType && unsupportedTypes.includes(searchType)) {
+      return new Response(
+        JSON.stringify({
+          success: true,
+          data: [],
+          message: `${searchType.charAt(0).toUpperCase() + searchType.slice(1)} search is not currently supported. Please try searching for crypto or stock assets instead.`
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const results: SearchResult[] = [];
 
-    // Determine which sources to search based on type filter
     let shouldSearchCrypto = false;
     let shouldSearchStock = false;
 
     if (!searchType || searchType === '') {
-      // No type filter, search both
       shouldSearchCrypto = true;
       shouldSearchStock = true;
+      console.log('Searching both crypto and stock (no type filter)');
     } else if (searchType === 'crypto') {
       // Only search crypto
       shouldSearchCrypto = true;
       shouldSearchStock = false;
+      console.log('Searching crypto only');
     } else if (searchType === 'stock') {
       // Only search stocks
       shouldSearchCrypto = false;
       shouldSearchStock = true;
+      console.log('Searching stock only');
     } else {
       // Unknown type, search both as fallback
       shouldSearchCrypto = true;
       shouldSearchStock = true;
+      console.log('Searching both crypto and stock (fallback for unknown type:', searchType, ')');
     }
 
 
@@ -125,63 +138,99 @@ serve(async (req) => {
           }
         }
       } catch (error) {
+        console.error('Crypto API error:', error);
       }
     }
 
 
     if (shouldSearchStock) {
       try {
-        const stockSearchResponse = await fetch(
-          `https://finnhub.io/api/v1/search?q=${encodeURIComponent(searchTerm)}&token=${Deno.env.get('FINNHUB_API_KEY')}`
-        );
+        console.log('Searching stocks for term:', searchTerm);
+        const apiKey = Deno.env.get('FINNHUB_API_KEY');
+        if (!apiKey) {
+          console.error('FINNHUB_API_KEY not found in environment variables');
+          // Continue without stock search
+        } else {
+          const stockSearchResponse = await fetch(
+            `https://finnhub.io/api/v1/search?q=${encodeURIComponent(searchTerm)}&token=${apiKey}`
+          );
 
-        if (stockSearchResponse.ok) {
-          const stockSearchData = await stockSearchResponse.json();
+          console.log('Stock search response status:', stockSearchResponse.status);
 
-          if (stockSearchData.result && stockSearchData.result.length > 0) {
-            // Get price for top results
-            for (const stock of stockSearchData.result.slice(0, 3)) {
-              try {
-                const priceResponse = await fetch(
-                  `https://finnhub.io/api/v1/quote?symbol=${stock.symbol}&token=${Deno.env.get('FINNHUB_API_KEY')}`
-                );
+          if (stockSearchResponse.ok) {
+            const stockSearchData = await stockSearchResponse.json();
+            console.log('Stock search response:', stockSearchData);
 
-                if (priceResponse.ok) {
-                  const priceData = await priceResponse.json();
+            if (stockSearchData.result && stockSearchData.result.length > 0) {
+              console.log('Found', stockSearchData.result.length, 'stock results');
+              // Get price for top results
+              for (const stock of stockSearchData.result.slice(0, 3)) {
+                try {
+                  console.log('Getting price for stock:', stock.symbol);
+                  const priceResponse = await fetch(
+                    `https://finnhub.io/api/v1/quote?symbol=${stock.symbol}&token=${apiKey}`
+                  );
 
-                  if (priceData.c > 0) { // Valid price data
-                    const change24h = ((priceData.c - priceData.pc) / priceData.pc) * 100;
+                  if (priceResponse.ok) {
+                    const priceData = await priceResponse.json();
+                    console.log('Price data for', stock.symbol, ':', priceData);
 
-                    results.push({
-                      id: stock.symbol,
-                      symbol: stock.symbol,
-                      name: stock.description || stock.displaySymbol,
-                      type: 'stock',
-                      price: priceData.c,
-                      change24h: change24h,
-                      high: priceData.h,
-                      low: priceData.l,
-                      open: priceData.o,
-                      previousClose: priceData.pc
-                    });
+                    if (priceData.c > 0) { // Valid price data
+                      const change24h = ((priceData.c - priceData.pc) / priceData.pc) * 100;
+
+                      const stockResult = {
+                        id: stock.symbol,
+                        symbol: stock.symbol,
+                        name: stock.description || stock.displaySymbol,
+                        type: 'stock' as const,
+                        price: priceData.c,
+                        change24h: change24h,
+                        high: priceData.h,
+                        low: priceData.l,
+                        open: priceData.o,
+                        previousClose: priceData.pc
+                      };
+                      console.log('Adding stock result:', stockResult);
+                      results.push(stockResult);
+                    }
+                  } else {
+                    console.log('Price API response not OK for', stock.symbol, ':', priceResponse.status);
                   }
+                } catch (error) {
+                  console.error('Stock price API error for', stock.symbol, ':', error);
                 }
-              } catch (error) {
               }
+            } else {
+              console.log('No stock results found in response');
             }
+          } else {
+            console.log('Stock search API response not OK:', stockSearchResponse.status);
+            const errorText = await stockSearchResponse.text();
+            console.log('Error response:', errorText);
           }
         }
       } catch (error) {
+        console.error('Stock search API error:', error);
       }
     } else {
+      console.log('Skipping stock search, shouldSearchStock:', shouldSearchStock);
     }
 
+    console.log('Final results count:', results.length);
+    console.log('Final results:', results);
+
     if (results.length === 0) {
+      const message = shouldSearchStock && shouldSearchCrypto
+        ? 'No data found for your search query. This could be due to API limitations or the asset not being found. Please try a different search term.'
+        : shouldSearchStock
+          ? 'No stock data found for your search query. Please try a different stock symbol or company name.'
+          : 'No cryptocurrency data found for your search query. Please try a different crypto name or symbol.';
+
       return new Response(
         JSON.stringify({
           success: true,
           data: [],
-          message: 'No data found for your search query. Please try a different term.'
+          message: message
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
