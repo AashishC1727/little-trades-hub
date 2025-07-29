@@ -13,7 +13,7 @@ import {
   Globe,
   ChevronDown
 } from 'lucide-react';
-import snapchatIcon from '@/assets/snapchat-icon.png';
+import snapchatIcon from '@/assets/snapchat.png';
 import visaLogo from '@/assets/visa-logo.png';
 import mastercardLogo from '@/assets/mastercard-logo.png';
 import paypalLogo from '@/assets/paypal-logo.png';
@@ -57,9 +57,7 @@ const Footer = () => {
               </Button>
               <Button variant="ghost" size="sm" className="p-2" asChild>
                 <a href="https://snapchat.com/add/aaassseeesss" target="_blank" rel="noopener noreferrer">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-                    <path d="M12 0C8.74 0 7.14.75 7.14 3.5c0 .75.28 1.5.57 2.25.28.75.57 1.5.57 2.25 0 1.5-1.5 3-1.5 4.5 0 1.5 1.5 3 1.5 4.5 0 .75-.29 1.5-.57 2.25-.29.75-.57 1.5-.57 2.25 0 2.75 1.6 3.5 4.86 3.5s4.86-.75 4.86-3.5c0-.75-.28-1.5-.57-2.25-.28-.75-.57-1.5-.57-2.25 0-1.5 1.5-3 1.5-4.5 0-1.5-1.5-3-1.5-4.5 0-.75.29-1.5.57-2.25.29-.75.57-1.5.57-2.25C16.86.75 15.26 0 12 0zm-1.5 15.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm3 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z"/>
-                  </svg>
+                  <img src={snapchatIcon} alt="Snapchat" className="w-4 h-4" />
                 </a>
               </Button>
               <Button variant="ghost" size="sm" className="p-2" asChild>
@@ -176,7 +174,7 @@ const Footer = () => {
               <span className="text-sm text-muted-foreground">Secure payments:</span>
               <div className="flex items-center space-x-4">
                 <CreditCard className="w-6 h-6 text-muted-foreground" />
-                <img src={visaLogo} alt="Visa" className="w-12 h-8 object-contain" />
+                <img src={visaLogo} alt="Visa" className="w-12 h-8 mt-2 object-contain" />
                 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="32" viewBox="0 0 48 32" className="w-12 h-8">
                   <circle cx="18" cy="16" r="8" fill="#eb001b"/>
                   <circle cx="30" cy="16" r="8" fill="#f79e1b"/>
