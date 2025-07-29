@@ -39,34 +39,10 @@ export const useLiveMarketData = () => {
     setError(null);
 
     try {
-      // Fetch stocks/forex data
-      const { data: stocks, error: stockError } = await supabase
-        .from('market_data_live')
-        .select('*')
-        .order('last_updated', { ascending: false });
-
-      if (stockError) throw stockError;
-
-      // Fetch crypto data (prioritize by source_priority)
-      const { data: crypto, error: cryptoError } = await supabase
-        .from('crypto_live_data')
-        .select('*')
-        .order('source_priority', { ascending: true })
-        .order('last_updated', { ascending: false });
-
-      if (cryptoError) throw cryptoError;
-
-      // Remove duplicates from crypto data, keeping highest priority source
-      const uniqueCrypto = crypto?.reduce((acc: CryptoLiveData[], current) => {
-        const existing = acc.find(item => item.symbol === current.symbol);
-        if (!existing || current.source_priority < existing.source_priority) {
-          return [...acc.filter(item => item.symbol !== current.symbol), current];
-        }
-        return acc;
-      }, []) || [];
-
-      setMarketData(stocks || []);
-      setCryptoData(uniqueCrypto);
+      // TODO: Enable once database migration is applied
+      // Using mock data temporarily until tables are created
+      setMarketData([]);
+      setCryptoData([]);
     } catch (err: any) {
       console.error('Error fetching live market data:', err);
       setError(err.message || 'Failed to fetch live market data');
@@ -111,44 +87,18 @@ export const useLiveMarketData = () => {
   useEffect(() => {
     fetchLiveData();
     
-    // Set up real-time subscriptions
-    const stocksChannel = supabase
-      .channel('market-data-live-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'market_data_live'
-        },
-        () => {
-          fetchLiveData();
-        }
-      )
-      .subscribe();
-
-    const cryptoChannel = supabase
-      .channel('crypto-live-data-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'crypto_live_data'
-        },
-        () => {
-          fetchLiveData();
-        }
-      )
-      .subscribe();
+    // TODO: Enable real-time subscriptions once tables are created
+    // const stocksChannel = supabase.channel('market-data-live-changes');
+    // const cryptoChannel = supabase.channel('crypto-live-data-changes');
 
     // Auto-refresh every 10 seconds
     const interval = setInterval(fetchLiveData, 10000);
 
     return () => {
       clearInterval(interval);
-      supabase.removeChannel(stocksChannel);
-      supabase.removeChannel(cryptoChannel);
+      // TODO: Re-enable when channels are set up
+      // supabase.removeChannel(stocksChannel);
+      // supabase.removeChannel(cryptoChannel);
     };
   }, []);
 
