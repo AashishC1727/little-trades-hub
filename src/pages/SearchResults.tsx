@@ -27,6 +27,7 @@ interface SearchResult {
 const SearchResults = () => {
   const [searchParams] = useSearchParams();
   const query = searchParams.get('query');
+  const type = searchParams.get('type');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -42,12 +43,16 @@ const SearchResults = () => {
       setError(null);
 
       try {
+        const searchBody: any = { query };
+        if (type) {
+          searchBody.type = type;
+        }
+
         const { data, error } = await supabase.functions.invoke('asset-search', {
-          body: { query }
+          body: searchBody
         });
 
         if (error) {
-          console.error('Search error:', error);
           setError('Failed to search assets. Please try again.');
           return;
         }
@@ -61,7 +66,6 @@ const SearchResults = () => {
           setError(data?.error || 'Search failed');
         }
       } catch (err) {
-        console.error('Search error:', err);
         setError('Failed to search assets. Please try again.');
       } finally {
         setLoading(false);
@@ -69,7 +73,7 @@ const SearchResults = () => {
     };
 
     searchAssets();
-  }, [query]);
+  }, [query, type]);
 
   const formatPrice = (price: number, type: string) => {
     if (type === 'crypto') {
@@ -89,7 +93,7 @@ const SearchResults = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       <main className="container mx-auto px-4 py-8">
         <div className="mb-6">
           <Link to="/" className="inline-flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors">
@@ -143,8 +147,8 @@ const SearchResults = () => {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                       {result.image && (
-                        <img 
-                          src={result.image} 
+                        <img
+                          src={result.image}
                           alt={result.name}
                           className="w-8 h-8 rounded-full"
                         />
@@ -161,7 +165,7 @@ const SearchResults = () => {
                     </Badge>
                   </div>
                 </CardHeader>
-                
+
                 <CardContent className="space-y-3">
                   <div className="flex items-center justify-between">
                     <div>
@@ -220,7 +224,7 @@ const SearchResults = () => {
           </Card>
         )}
       </main>
-      
+
       <Footer />
     </div>
   );
