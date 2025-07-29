@@ -42,9 +42,18 @@ const SearchResults = () => {
       setLoading(true);
       setError(null);
 
+      // Check if the type parameter corresponds to an unsupported category
+      const unsupportedTypes = ['commodity', 'forex', 'fx', 'nft', 'realestate', 'real-estate'];
+      if (type && unsupportedTypes.includes(type.toLowerCase())) {
+        setError(`${type.charAt(0).toUpperCase() + type.slice(1)} search is not currently supported. Please try searching for Crypto or Stocks instead.`);
+        setResults([]);
+        setLoading(false);
+        return;
+      }
+
       try {
         const searchBody: any = { query };
-        if (type) {
+        if (type && ['crypto', 'stock'].includes(type.toLowerCase())) {
           searchBody.type = type;
         }
 
@@ -58,14 +67,19 @@ const SearchResults = () => {
         }
 
         if (data?.success) {
-          setResults(data.data);
-          if (data.data.length === 0 && data.message) {
-            setError(data.message);
+          console.log('Search results received:', data.data);
+          const resultsData = data.data || [];
+          setResults(resultsData);
+          if (resultsData.length === 0) {
+            setError(data.message || 'No assets found for your search query. Please try a different term.');
           }
         } else {
+          console.log('Search failed with response:', data);
           setError(data?.error || 'Search failed');
+          setResults([]);
         }
       } catch (err) {
+        console.error('Search error:', err);
         setError('Failed to search assets. Please try again.');
       } finally {
         setLoading(false);
@@ -76,6 +90,7 @@ const SearchResults = () => {
   }, [query, type]);
 
   const formatPrice = (price: number, type: string) => {
+    if (!price || isNaN(price)) return 'N/A';
     if (type === 'crypto') {
       return price < 1 ? `$${price.toFixed(6)}` : `$${price.toLocaleString()}`;
     }
@@ -154,14 +169,14 @@ const SearchResults = () => {
                         />
                       )}
                       <div>
-                        <CardTitle className="text-lg">{result.symbol}</CardTitle>
+                        <CardTitle className="text-lg">{result.symbol || 'Unknown'}</CardTitle>
                         <p className="text-sm text-muted-foreground truncate">
-                          {result.name}
+                          {result.name || 'Unknown Asset'}
                         </p>
                       </div>
                     </div>
                     <Badge variant="outline" className={getTypeColor(result.type)}>
-                      {result.type.toUpperCase()}
+                      {(result.type || 'unknown').toUpperCase()}
                     </Badge>
                   </div>
                 </CardHeader>
@@ -170,19 +185,19 @@ const SearchResults = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="text-2xl font-bold">
-                        {formatPrice(result.price, result.type)}
+                        {result.price ? formatPrice(result.price, result.type) : 'N/A'}
                       </div>
                       <div className={cn(
                         "flex items-center space-x-1 text-sm font-medium",
-                        result.change24h >= 0 ? "text-green-600" : "text-red-600"
+                        (result.change24h || 0) >= 0 ? "text-green-600" : "text-red-600"
                       )}>
-                        {result.change24h >= 0 ? (
+                        {(result.change24h || 0) >= 0 ? (
                           <TrendingUp className="w-3 h-3" />
                         ) : (
                           <TrendingDown className="w-3 h-3" />
                         )}
                         <span>
-                          {result.change24h >= 0 ? '+' : ''}{result.change24h.toFixed(2)}%
+                          {(result.change24h || 0) >= 0 ? '+' : ''}{(result.change24h || 0).toFixed(2)}%
                         </span>
                       </div>
                     </div>
