@@ -8,6 +8,12 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { useP2PListings } from '@/hooks/useP2PListings';
 import { ArrowLeftRight, Calendar, Eye, Filter, MapPin, Plus, Search, TrendingUp } from 'lucide-react';
+import { TradeHealthMeter } from '@/components/TradeHealthMeter';
+import { SnapAndListButton } from '@/components/SnapAndListButton';
+import { P2PTradeHistory } from '@/components/P2PTradeHistory';
+import { AssetAuthenticity } from '@/components/AssetAuthenticity';
+import { DisputeResolution } from '@/components/DisputeResolution';
+import { TrustReputationScore } from '@/components/TrustReputationScore';
 
 export const P2PExchange = () => {
   const { listings, loading, error, fetchListings, incrementViews } = useP2PListings();
@@ -130,10 +136,7 @@ export const P2PExchange = () => {
             </CardContent>
           </Card>
 
-          <Button className="w-full" size="lg">
-            <Plus className="h-4 w-4 mr-2" />
-            Create Listing
-          </Button>
+          <SnapAndListButton onListingCreated={() => fetchListings(filters)} />
         </div>
 
         {/* Main Content */}
@@ -190,6 +193,14 @@ export const P2PExchange = () => {
                       </div>
                     </div>
 
+                    <TradeHealthMeter
+                      offeredAsset={listing.offered_asset}
+                      wantedAsset={listing.wanted_asset}
+                      offeredValue={listing.offered_value}
+                      wantedValue={listing.wanted_value}
+                      category={listing.category}
+                    />
+
                     {listing.asset_image_url && (
                       <img 
                         src={listing.asset_image_url} 
@@ -225,19 +236,29 @@ export const P2PExchange = () => {
 
                       <Separator />
 
-                      <div className="flex items-center justify-between text-xs text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <Avatar className="h-4 w-4">
-                            <AvatarImage src={listing.profiles?.avatar_url} />
-                            <AvatarFallback>{listing.profiles?.display_name?.[0] || 'U'}</AvatarFallback>
-                          </Avatar>
-                          {listing.profiles?.display_name || 'Anonymous'}
-                        </div>
-                        
-                        <div className="flex items-center gap-1">
-                          <Calendar className="h-3 w-3" />
-                          {formatTimeLeft(listing.expiry)}
-                        </div>
+                      <TrustReputationScore
+                        userName={listing.profiles?.display_name || 'Anonymous'}
+                        avatarUrl={listing.profiles?.avatar_url}
+                        metrics={{
+                          rating: 4.2 + Math.random() * 0.8,
+                          totalReviews: Math.floor(Math.random() * 50) + 5,
+                          verified: Math.random() > 0.3,
+                          responseTime: Math.random() * 6,
+                          successfulTrades: Math.floor(Math.random() * 25) + 3,
+                          trustScore: 50 + Math.random() * 40
+                        }}
+                        size="small"
+                      />
+                      
+                      <AssetAuthenticity
+                        listingId={listing.id}
+                        isOwner={false}
+                        authenticityScore={60 + Math.random() * 35}
+                      />
+
+                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                        <Calendar className="h-3 w-3" />
+                        {formatTimeLeft(listing.expiry)}
                       </div>
 
                       {listing.location && (

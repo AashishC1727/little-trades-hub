@@ -3,13 +3,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, ExternalLink, RefreshCw, AlertCircle, Clock } from 'lucide-react';
 
 // Mock components for standalone functionality
-const Button = ({ children, className, ...props }) => (
+const Button = ({ children, className = "", ...props }: any) => (
   <button className={`inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 ${className}`} {...props}>
     {children}
   </button>
 );
 
-const Badge = ({ children, className, variant }) => {
+const Badge = ({ children, className, variant }: any) => {
     const baseClasses = "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2";
     const variantClasses = {
         default: "border-transparent bg-primary text-primary-foreground hover:bg-primary/80",
@@ -20,30 +20,18 @@ const Badge = ({ children, className, variant }) => {
     return <div className={`${baseClasses} ${variantClasses[variant] || variantClasses.default} ${className}`}>{children}</div>;
 };
 
+const Card = ({ children, className }: any) => <div className={`rounded-xl border bg-card text-card-foreground shadow ${className}`}>{children}</div>;
+const CardHeader = ({ children, className }: any) => <div className={`flex flex-col space-y-1.5 p-6 ${className}`}>{children}</div>;
+const CardContent = ({ children, className }: any) => <div className={`p-6 pt-0 ${className}`}>{children}</div>;
 
-const Card = ({ children, className }) => <div className={`rounded-xl border bg-card text-card-foreground shadow ${className}`}>{children}</div>;
-const CardHeader = ({ children, className }) => <div className={`flex flex-col space-y-1.5 p-6 ${className}`}>{children}</div>;
-const CardContent = ({ children, className }) => <div className={`p-6 pt-0 ${className}`}>{children}</div>;
-
-const Alert = ({ children, className, variant }) => {
+const Alert = ({ children, className, variant }: any) => {
     const variantClasses = {
         default: "bg-background text-foreground",
         destructive: "border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive",
     };
     return <div role="alert" className={`relative w-full rounded-lg border p-4 [&>svg~*]:pl-7 [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-foreground ${variantClasses[variant] || variantClasses.default} ${className}`}>{children}</div>;
 };
-const AlertDescription = ({ children, className }) => <div className={`text-sm [&_p]:leading-relaxed ${className}`}>{children}</div>;
-
-// Embla Carousel Hook (basic mock)
-const useEmblaCarousel = (options) => {
-  const ref = useRef(null);
-  const api = {
-    scrollPrev: () => console.log('scroll prev'),
-    scrollNext: () => console.log('scroll next'),
-  };
-  return [ref, api];
-};
-
+const AlertDescription = ({ children, className }: any) => <div className={`text-sm [&_p]:leading-relaxed ${className}`}>{children}</div>;
 
 interface NewsDecksProps {
   selectedTopics: string[];
@@ -123,12 +111,7 @@ const getNewsTag = (item: NewsItem): { tag: string; color: string } => {
 };
 
 export const NewsDecks: React.FC<NewsDecksProps> = ({ selectedTopics }) => {
-  const [emblaRef, emblaApi] = useEmblaCarousel({ 
-    align: 'start',
-    containScroll: 'trimSnaps',
-    dragFree: true
-  });
-
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [newsData, setNewsData] = useState<Record<string, NewsItem[]>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -258,8 +241,17 @@ export const NewsDecks: React.FC<NewsDecksProps> = ({ selectedTopics }) => {
     fetchNewsData(true);
   };
 
-  const scrollPrev = () => emblaApi?.scrollPrev();
-  const scrollNext = () => emblaApi?.scrollNext();
+  const scrollPrev = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: -320, behavior: 'smooth' });
+    }
+  };
+  
+  const scrollNext = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: 320, behavior: 'smooth' });
+    }
+  };
 
   const formatTimeAgo = (dateString: string): string => {
     const now = new Date();
@@ -281,13 +273,11 @@ export const NewsDecks: React.FC<NewsDecksProps> = ({ selectedTopics }) => {
     return (
       <motion.div
         key={topic}
-        // MODIFICATION: Added a fixed height to each card's container (the slide).
-        className="embla__slide min-w-[320px] max-w-[320px] mr-6 h-[450px]"
+        className="min-w-[320px] max-w-[320px] mr-6 h-[450px]"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: index * 0.1 }}
       >
-        {/* MODIFICATION: Made the card a flex column to control its children's layout. */}
         <Card className="h-full flex flex-col bg-card/50 backdrop-blur-sm border-border/50 hover:bg-card/70 transition-all">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
@@ -302,7 +292,6 @@ export const NewsDecks: React.FC<NewsDecksProps> = ({ selectedTopics }) => {
               </div>
             </div>
           </CardHeader>
-          {/* MODIFICATION: Made the content area flexible and scrollable on overflow. */}
           <CardContent className="flex-1 overflow-y-auto space-y-4">
             <AnimatePresence mode="popLayout">
               {newsItems.length > 0 ? (
@@ -389,7 +378,7 @@ export const NewsDecks: React.FC<NewsDecksProps> = ({ selectedTopics }) => {
           <AlertCircle className="h-4 w-4" />
           <AlertDescription className="flex items-center justify-between">
             <span>Failed to load news: {error}</span>
-            <Button variant="outline" size="sm" onClick={handleRefresh}>
+            <Button variant="outline" size="sm" onClick={handleRefresh} className="">
               Retry
             </Button>
           </AlertDescription>
@@ -447,27 +436,28 @@ export const NewsDecks: React.FC<NewsDecksProps> = ({ selectedTopics }) => {
       )}
 
       {/* News Content */}
-      <div className="overflow-hidden h-full" ref={emblaRef}>
-        {/* MODIFICATION: Aligned cards to the center vertically. */}
-        <div className="flex h-full items-center pt-16 pl-6 pb-12">
-          {availableTopics.length > 0 ? (
-            availableTopics.map((topic, index) => renderNewsDeck(topic, index))
-          ) : (
-            <div className="flex-1 flex items-center justify-center">
-              <div className="text-center">
-                <div className="text-lg font-medium text-muted-foreground mb-2">
-                  No news available for selected topics
+      <div className="overflow-hidden h-full">
+        <div className="overflow-x-auto" ref={scrollContainerRef}>
+          <div className="flex h-full items-center pt-16 pl-6 pb-12">
+            {availableTopics.length > 0 ? (
+              availableTopics.map((topic, index) => renderNewsDeck(topic, index))
+            ) : (
+              <div className="flex-1 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="text-lg font-medium text-muted-foreground mb-2">
+                    No news available for selected topics
+                  </div>
+                  <div className="text-sm text-muted-foreground mb-4">
+                    Try selecting different topics or check back later
+                  </div>
+                  <Button onClick={handleRefresh} variant="outline" className="">
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Refresh News
+                  </Button>
                 </div>
-                <div className="text-sm text-muted-foreground mb-4">
-                  Try selecting different topics or check back later
-                </div>
-                <Button onClick={handleRefresh} variant="outline">
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  Refresh News
-                </Button>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
 
@@ -485,21 +475,3 @@ export const NewsDecks: React.FC<NewsDecksProps> = ({ selectedTopics }) => {
     </div>
   );
 };
-
-// Default export for a complete App structure
-export default function App() {
-    // You can customize the topics here
-    const topics = ['Monetary Policy', 'Crypto', 'AI', 'Deals', 'Energy'];
-    return (
-        <div className="bg-background text-foreground min-h-screen">
-             {/* This is a placeholder for the content that was overlapping */}
-            <div className="text-center pt-12">
-                <h1 className="text-4xl font-bold">Your Trading Command.Center</h1>
-                <p className="text-muted-foreground mt-2">Everything you need to trade</p>
-            </div>
-            <div style={{height: '600px'}}>
-                <NewsDecks selectedTopics={topics} />
-            </div>
-        </div>
-    )
-}
