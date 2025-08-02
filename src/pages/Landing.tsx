@@ -9,6 +9,7 @@ import ProModePreview from '@/components/ProModePreview';
 import WaitlistSection from '@/components/WaitlistSection';
 import Footer from '@/components/Footer';
 import CookieConsent from '@/components/CookieConsent';
+import { P2PExchange } from '@/components/P2PExchange';
 
 const Landing = () => {
   return (
@@ -18,7 +19,8 @@ const Landing = () => {
       <LiveMarketTicker />
       <YourNewsSection />
       <DashboardPreview />
-      <P2PTradingPreview />
+      {/* This component now contains the new features */}
+      <P2PExchange />
       <AssetDiscoveryPreview />
       <ProModePreview />
       <WaitlistSection />
