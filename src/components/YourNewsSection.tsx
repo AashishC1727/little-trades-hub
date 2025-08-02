@@ -12,13 +12,6 @@ export const YourNewsSection = () => {
 
   return (
     <section className="w-full bg-background border-t border-border">
-      <div className="flex h-[600px]">
-        {/* Left Sidebar */}
-        <TopicsIdebar
-          selectedTopics={selectedTopics} 
-          onTopicsChange={setSelectedTopics}
-        />
-        
         {/* Main News Section */}
         <div className="flex-1 flex flex-col">
           <div className="flex items-center justify-between p-6 border-b border-border">
@@ -28,9 +21,8 @@ export const YourNewsSection = () => {
             </Button>
           </div>
           
-          <NewsDecks selectedTopics={selectedTopics} />
+          <NewsDecks />
         </div>
-      </div>
     </section>
   );
 };

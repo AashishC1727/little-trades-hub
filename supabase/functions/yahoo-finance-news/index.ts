@@ -292,6 +292,18 @@ const REGION_KEYWORDS = {
     'latin america'
   ]
 };
+// News item type definition
+interface NewsItem {
+  title: string;
+  summary: string;
+  url: string;
+  publishedAt: string;
+  source: string;
+  category: string;
+  region?: string;
+  sector?: string;
+}
+
 // Enhanced XML parsing function
 function parseRSSItem(itemXML) {
   try {
@@ -343,14 +355,8 @@ function categorizeContent(title, summary) {
     }
   }
   // Detect sector (same as category for sectors)
-  if ([
-    'Energy',
-    'Pharmaceuticals',
-    'Automotive',
-    'Aerospace',
-    'Entertainment',
-    'Property'
-  ].includes(bestCategory)) {
+  const sectorCategories = ['Energy', 'Pharmaceuticals', 'Automotive', 'Aerospace'];
+  if (sectorCategories.includes(bestCategory)) {
     sector = bestCategory;
   }
   return {
@@ -360,8 +366,8 @@ function categorizeContent(title, summary) {
   };
 }
 // Fetch and parse RSS feed with retry logic
-async function fetchRSSFeed(feed) {
-  const items = [];
+async function fetchRSSFeed(feed): Promise<NewsItem[]> {
+  const items: NewsItem[] = [];
   let attempts = 0;
   const maxAttempts = 2;
   while(attempts < maxAttempts){
@@ -388,7 +394,7 @@ async function fetchRSSFeed(feed) {
         /<item[^>]*>(.*?)<\/item>/gis,
         /<entry[^>]*>(.*?)<\/entry>/gis
       ];
-      let rssItems = [];
+      let rssItems: RegExpMatchArray[] = [];
       for (const pattern of itemPatterns){
         rssItems = Array.from(xmlText.matchAll(pattern));
         if (rssItems.length > 0) break;
@@ -440,7 +446,7 @@ const handler = async (req)=>{
         return []; // Return empty array on error
       }));
     const results = await Promise.allSettled(feedPromises);
-    const allNews = [];
+    const allNews: NewsItem[] = [];
     results.forEach((result, index)=>{
       if (result.status === 'fulfilled') {
         allNews.push(...result.value);
@@ -449,7 +455,7 @@ const handler = async (req)=>{
       }
     });
     // Remove duplicates based on title similarity
-    const uniqueNews = allNews.reduce((acc, current)=>{
+    const uniqueNews = allNews.reduce<NewsItem[]>((acc, current)=>{
       const isDuplicate = acc.some((item)=>item.title.toLowerCase().substring(0, 50) === current.title.toLowerCase().substring(0, 50));
       if (!isDuplicate) {
         acc.push(current);
@@ -459,7 +465,7 @@ const handler = async (req)=>{
     // Sort by publication date (newest first) and limit results
     const sortedNews = uniqueNews.sort((a, b)=>new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()).slice(0, 50);
     // Group by categories for better organization
-    const categorizedNews = sortedNews.reduce((acc, item)=>{
+    const categorizedNews = sortedNews.reduce<Record<string, NewsItem[]>>((acc, item)=>{
       if (!acc[item.category]) {
         acc[item.category] = [];
       }
