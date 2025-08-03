@@ -69,7 +69,7 @@ const LiveMarketTicker = () => {
 
   return (
     <>
-      <style jsx>{`
+      <style>{`
         .ticker-container {
           background: linear-gradient(135deg, 
             rgba(248, 250, 252, 0.95) 0%, 

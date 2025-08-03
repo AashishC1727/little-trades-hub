@@ -242,7 +242,7 @@ const LiveNewsComponent = ({
           className="w-full h-52 object-cover transition-transform duration-700 group-hover:scale-110"
           loading="lazy"
           onError={(e) => {
-            e.target.src = `https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=600&h=400&fit=crop&auto=format&q=80`;
+            (e.target as HTMLImageElement).src = `https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=600&h=400&fit=crop&auto=format&q=80`;
           }}
         />
         
@@ -473,7 +473,7 @@ const LiveNewsComponent = ({
       </div>
 
       {/* Custom Styles */}
-      <style jsx>{`
+      <style>{`
         .scrollbar-hide {
           -ms-overflow-style: none;
           scrollbar-width: none;
