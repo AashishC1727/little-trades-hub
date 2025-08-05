@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,7 +6,6 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-// import { useP2PListings } from '@/hooks/useP2PListings'; // Supabase hook is commented out for now
 import { ArrowLeftRight, Calendar, Eye, Filter, History, MapPin, Plus, Search, TrendingUp, List, Tag, ShieldCheck } from 'lucide-react';
 
 // --- Importing all the new feature components ---
@@ -14,10 +13,36 @@ import { TradeHealthMeter } from '@/components/TradeHealthMeter';
 import { SnapAndListButton } from '@/components/SnapAndListButton';
 import { AssetAuthenticity } from '@/components/AssetAuthenticity';
 import { TrustReputationScore } from '@/components/TrustReputationScore';
-import { P2PTradeHistory } from '@/components/P2PTradeHistory'; // This is the full component, we will use a summary instead.
+import { P2PTradeHistory } from '@/components/P2PTradeHistory';
 
-// Mock Data with English descriptions
-const mockListings = [
+// Helper function to generate consistent random data based on a seed (listing ID)
+const generateConsistentRandomData = (seed) => {
+  // Simple seeded random function
+  const seededRandom = (seed) => {
+    const x = Math.sin(seed) * 10000;
+    return x - Math.floor(x);
+  };
+  
+  const rand1 = seededRandom(seed);
+  const rand2 = seededRandom(seed * 2);
+  const rand3 = seededRandom(seed * 3);
+  const rand4 = seededRandom(seed * 4);
+  const rand5 = seededRandom(seed * 5);
+  const rand6 = seededRandom(seed * 6);
+  
+  return {
+    rating: parseFloat((4.2 + rand1 * 0.8).toFixed(1)),
+    totalReviews: Math.floor(rand2 * 50) + 5,
+    verified: rand3 > 0.3,
+    responseTime: parseFloat((rand4 * 6).toFixed(2)),
+    successfulTrades: Math.floor(rand5 * 25) + 3,
+    trustScore: parseFloat((50 + rand6 * 40).toFixed(2)),
+    authenticityScore: parseFloat((60 + rand1 * 35).toFixed(2))
+  };
+};
+
+// Mock Data with English descriptions - now with consistent random data
+const createMockListings = () => [
   {
     id: '1',
     created_at: '2025-08-02T12:00:00Z',
@@ -29,12 +54,12 @@ const mockListings = [
     location: 'Mumbai, India',
     offered_value: 4500,
     wanted_value: 4800,
-    expiry: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(), // Expires in 5 days
+    expiry: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
     status: 'active',
     views: 120,
     profiles: {
       display_name: 'Rajesh Kumar',
-      avatar_url: 'https://i.pravatar.cc/150?u=rajesh'
+      avatar_url: 'https://i.pravatar.cc/150?u=priya'
     }
   },
   {
@@ -48,12 +73,12 @@ const mockListings = [
     location: 'Bangalore, India',
     offered_value: 2000,
     wanted_value: 2100,
-    expiry: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(), // Expires in 2 days
+    expiry: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
     status: 'active',
     views: 250,
     profiles: {
       display_name: 'Priya Sharma',
-      avatar_url: 'https://i.pravatar.cc/150?u=priya'
+      avatar_url: 'https://i.pravatar.cc/150?u=rajesh'
     }
   },
   {
@@ -67,7 +92,7 @@ const mockListings = [
     location: 'Delhi, India',
     offered_value: 35000,
     wanted_value: 34000,
-    expiry: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString(), // Expires in 10 days
+    expiry: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString(),
     status: 'active',
     views: 88,
     profiles: {
@@ -77,7 +102,6 @@ const mockListings = [
   }
 ];
 
-// A smaller component for the sidebar to prevent layout issues.
 const TradeHistorySummary = () => (
     <Card>
         <CardHeader>
@@ -104,7 +128,6 @@ const TradeHistorySummary = () => (
     </Card>
 );
 
-// A new component for quick actions in the sidebar.
 const QuickActions = () => (
     <Card>
         <CardHeader>
@@ -127,10 +150,31 @@ const QuickActions = () => (
     </Card>
 );
 
-
 export const P2PExchange = () => {
-  // const { listings, loading, error, fetchListings, incrementViews } = useP2PListings(); // Supabase hook is commented out for now
-  const [listings, setListings] = useState(mockListings);
+  // Generate listings with consistent random data using useMemo
+  const listings = useMemo(() => {
+    const mockListings = createMockListings();
+    
+    // Generate consistent random data for each listing
+    return mockListings.map(listing => {
+      const seed = parseInt(listing.id); // Use listing ID as seed
+      const randomData = generateConsistentRandomData(seed);
+      
+      return {
+        ...listing,
+        trustMetrics: {
+          rating: randomData.rating,
+          totalReviews: randomData.totalReviews,
+          verified: randomData.verified,
+          responseTime: randomData.responseTime,
+          successfulTrades: randomData.successfulTrades,
+          trustScore: randomData.trustScore
+        },
+        authenticityScore: randomData.authenticityScore
+      };
+    });
+  }, []); // Empty dependency array means this only runs once
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   
@@ -141,16 +185,11 @@ export const P2PExchange = () => {
   });
   const [searchTerm, setSearchTerm] = useState('');
 
-  // useEffect(() => {
-  //   fetchListings({ ...filters, search: searchTerm });
-  // }, [filters, searchTerm]); // Data fetching useEffect is commented out
-
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));
   };
   
   const handleListingClick = (id) => {
-    // incrementViews(id); // Backend call is commented out
     console.log(`Clicked on listing ${id}.`);
   };
 
@@ -177,19 +216,19 @@ export const P2PExchange = () => {
     return colors[category] || colors.other;
   };
 
-   const filteredListings = (listings || []).filter(listing => {
-     const searchLower = searchTerm.toLowerCase();
-     const categoryFilter = filters.category === 'all' || listing.category === filters.category;
-     
-     const searchFilter = (
-       listing.offered_asset.toLowerCase().includes(searchLower) ||
-       listing.wanted_asset.toLowerCase().includes(searchLower) ||
-       (listing.description && listing.description.toLowerCase().includes(searchLower)) ||
-       (listing.profiles && listing.profiles.display_name && listing.profiles.display_name.toLowerCase().includes(searchLower))
-     );
+  const filteredListings = (listings || []).filter(listing => {
+    const searchLower = searchTerm.toLowerCase();
+    const categoryFilter = filters.category === 'all' || listing.category === filters.category;
+    
+    const searchFilter = (
+      listing.offered_asset.toLowerCase().includes(searchLower) ||
+      listing.wanted_asset.toLowerCase().includes(searchLower) ||
+      (listing.description && listing.description.toLowerCase().includes(searchLower)) ||
+      (listing.profiles && listing.profiles.display_name && listing.profiles.display_name.toLowerCase().includes(searchLower))
+    );
 
-     return categoryFilter && searchFilter;
-   });
+    return categoryFilter && searchFilter;
+  });
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -263,7 +302,6 @@ export const P2PExchange = () => {
                     </CardContent>
                 </Card>
                 <TradeHistorySummary />
-                {/* Added the new QuickActions card to fill the empty space */}
                 <QuickActions />
             </aside>
 
@@ -309,14 +347,7 @@ export const P2PExchange = () => {
                                      <TrustReputationScore
                                         userName={listing.profiles?.display_name || 'Anonymous'}
                                         avatarUrl={listing.profiles?.avatar_url}
-                                        metrics={{
-                                            rating: parseFloat((4.2 + Math.random() * 0.8).toFixed(1)),
-                                            totalReviews: Math.floor(Math.random() * 50) + 5,
-                                            verified: Math.random() > 0.3,
-                                            responseTime: parseFloat((Math.random() * 6).toFixed(2)),
-                                            successfulTrades: Math.floor(Math.random() * 25) + 3,
-                                            trustScore: parseFloat((50 + Math.random() * 40).toFixed(2))
-                                        }}
+                                        metrics={listing.trustMetrics}
                                         size="medium"
                                     />
                                 </CardHeader>
@@ -359,12 +390,13 @@ export const P2PExchange = () => {
                                         offeredValue={listing.offered_value}
                                         wantedValue={listing.wanted_value}
                                         category={listing.category}
+                                        listingId={listing.id}
                                     />
                                     
                                     <AssetAuthenticity
                                         listingId={listing.id}
                                         isOwner={false}
-                                        authenticityScore={parseFloat((60 + Math.random() * 35).toFixed(2))}
+                                        authenticityScore={listing.authenticityScore}
                                     />
                                 </CardContent>
                                 <div className="p-4 pt-2 border-t mt-auto">

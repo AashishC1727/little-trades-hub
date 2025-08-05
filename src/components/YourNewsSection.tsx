@@ -14,12 +14,6 @@ export const YourNewsSection = () => {
     <section className="w-full bg-background border-t border-border">
         {/* Main News Section */}
         <div className="flex-1 flex flex-col">
-          <div className="flex items-center justify-between p-6 border-b border-border">
-            <h2 className="text-2xl font-bold text-foreground">Your News</h2>
-            <Button variant="outline" size="sm">
-              Filter
-            </Button>
-          </div>
           
           <NewsDecks />
         </div>
