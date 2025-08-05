@@ -19,6 +19,8 @@ export const SnapAndListButton: React.FC<SnapAndListButtonProps> = ({ onListingC
   const [step, setStep] = useState<'capture' | 'details'>('capture');
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  // CHANGE 1: Add state for the media stream
+  const [stream, setStream] = useState<MediaStream | null>(null);
   const [listing, setListing] = useState({
     offeredAsset: '',
     wantedAsset: '',
@@ -82,18 +84,27 @@ export const SnapAndListButton: React.FC<SnapAndListButtonProps> = ({ onListingC
 
   const startCamera = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
+      const mediaStream = await navigator.mediaDevices.getUserMedia({ 
         video: { facingMode: 'environment' } 
       });
       if (videoRef.current) {
-        videoRef.current.srcObject = stream;
+        videoRef.current.srcObject = mediaStream;
       }
+      // CHANGE 2: Set the stream in state to trigger a re-render
+      setStream(mediaStream);
     } catch (error) {
       toast({
         title: "Camera Error",
         description: "Unable to access camera. Please use file upload instead.",
         variant: "destructive"
       });
+    }
+  };
+  
+  const stopCamera = () => {
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+      setStream(null);
     }
   };
 
@@ -108,9 +119,8 @@ export const SnapAndListButton: React.FC<SnapAndListButtonProps> = ({ onListingC
       const imageData = canvas.toDataURL('image/jpeg');
       setCapturedImage(imageData);
       
-      // Stop camera
-      const stream = video.srcObject as MediaStream;
-      stream?.getTracks().forEach(track => track.stop());
+      // Stop camera after taking photo
+      stopCamera();
       
       analyzeImage(imageData);
     }
@@ -143,16 +153,19 @@ export const SnapAndListButton: React.FC<SnapAndListButtonProps> = ({ onListingC
     setIsOpen(false);
     setStep('capture');
     setCapturedImage(null);
-    
-    // Stop camera if running
-    if (videoRef.current?.srcObject) {
-      const stream = videoRef.current.srcObject as MediaStream;
-      stream.getTracks().forEach(track => track.stop());
-    }
+    // CHANGE 3: Stop camera when dialog is closed
+    stopCamera();
   };
+  
+  const handleOpenChange = (open: boolean) => {
+      setIsOpen(open);
+      if (!open) {
+          handleClose();
+      }
+  }
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button 
           className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg"
@@ -177,44 +190,55 @@ export const SnapAndListButton: React.FC<SnapAndListButtonProps> = ({ onListingC
               <>
                 <Card>
                   <CardContent className="p-4 text-center">
+                    {/* CHANGE 4: Use the 'stream' state to control display */}
                     <video 
                       ref={videoRef} 
                       autoPlay 
                       playsInline
+                      muted // It's a good practice to mute the video preview
                       className="w-full rounded-lg mb-4"
-                      style={{ display: videoRef.current?.srcObject ? 'block' : 'none' }}
+                      style={{ display: stream ? 'block' : 'none' }}
                     />
                     <canvas ref={canvasRef} style={{ display: 'none' }} />
                     
                     <div className="space-y-4">
-                      <Button onClick={startCamera} className="w-full">
-                        <Camera className="h-4 w-4 mr-2" />
-                        Open Camera
-                      </Button>
+                      {/* Hide "Open Camera" if camera is already open */}
+                      {!stream && (
+                        <Button onClick={startCamera} className="w-full">
+                          <Camera className="h-4 w-4 mr-2" />
+                          Open Camera
+                        </Button>
+                      )}
                       
-                      {videoRef.current?.srcObject && (
+                      {/* CHANGE 5: Use 'stream' state to show the capture button */}
+                      {stream && (
                         <Button onClick={capturePhoto} variant="outline" className="w-full">
                           📸 Capture Photo
                         </Button>
                       )}
                       
-                      <div className="text-sm text-muted-foreground">or</div>
-                      
-                      <input
-                        type="file"
-                        accept="image/*"
-                        ref={fileInputRef}
-                        onChange={handleFileUpload}
-                        className="hidden"
-                      />
-                      <Button 
-                        onClick={() => fileInputRef.current?.click()}
-                        variant="outline" 
-                        className="w-full"
-                      >
-                        <Upload className="h-4 w-4 mr-2" />
-                        Upload Photo
-                      </Button>
+                      {/* Show 'or' and 'Upload' only when camera is off */}
+                      {!stream && (
+                        <>
+                          <div className="text-sm text-muted-foreground">or</div>
+                          
+                          <input
+                            type="file"
+                            accept="image/*"
+                            ref={fileInputRef}
+                            onChange={handleFileUpload}
+                            className="hidden"
+                          />
+                          <Button 
+                            onClick={() => fileInputRef.current?.click()}
+                            variant="outline" 
+                            className="w-full"
+                          >
+                            <Upload className="h-4 w-4 mr-2" />
+                            Upload Photo
+                          </Button>
+                        </>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -233,109 +257,112 @@ export const SnapAndListButton: React.FC<SnapAndListButtonProps> = ({ onListingC
         )}
 
         {step === 'details' && (
-          <div className="space-y-4">
+           <div className="space-y-4">
             {capturedImage && (
-              <div className="relative">
-                <img src={capturedImage} alt="Captured item" className="w-full h-32 object-cover rounded-lg" />
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="absolute top-2 right-2 h-6 w-6 p-0"
-                  onClick={() => setCapturedImage(null)}
-                >
-                  <X className="h-3 w-3" />
-                </Button>
-              </div>
+                <div className="relative">
+                    <img src={capturedImage} alt="Captured item" className="w-full h-32 object-cover rounded-lg" />
+                    <Button
+                        size="sm"
+                        variant="outline"
+                        className="absolute top-2 right-2 h-6 w-6 p-0"
+                        onClick={() => {
+                            setCapturedImage(null);
+                            setStep('capture'); // Go back to capture step
+                        }}
+                    >
+                        <X className="h-3 w-3" />
+                    </Button>
+                </div>
             )}
             
             <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Label htmlFor="offered">Offering *</Label>
-                <Input
-                  id="offered"
-                  value={listing.offeredAsset}
-                  onChange={(e) => setListing(prev => ({ ...prev, offeredAsset: e.target.value }))}
-                  placeholder="Item name"
-                />
-              </div>
-              <div>
-                <Label htmlFor="wanted">Want *</Label>
-                <Input
-                  id="wanted"
-                  value={listing.wantedAsset}
-                  onChange={(e) => setListing(prev => ({ ...prev, wantedAsset: e.target.value }))}
-                  placeholder="What you want"
-                />
-              </div>
+                <div>
+                    <Label htmlFor="offered">Offering *</Label>
+                    <Input
+                        id="offered"
+                        value={listing.offeredAsset}
+                        onChange={(e) => setListing(prev => ({ ...prev, offeredAsset: e.target.value }))}
+                        placeholder="Item name"
+                    />
+                </div>
+                <div>
+                    <Label htmlFor="wanted">Want *</Label>
+                    <Input
+                        id="wanted"
+                        value={listing.wantedAsset}
+                        onChange={(e) => setListing(prev => ({ ...prev, wantedAsset: e.target.value }))}
+                        placeholder="What you want"
+                    />
+                </div>
             </div>
 
             <div>
-              <Label htmlFor="category">Category</Label>
-              <Select value={listing.category} onValueChange={(value) => setListing(prev => ({ ...prev, category: value }))}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="crypto">Cryptocurrency</SelectItem>
-                  <SelectItem value="stock">Stocks</SelectItem>
-                  <SelectItem value="collectible">Collectibles</SelectItem>
-                  <SelectItem value="currency">Currency</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
-                </SelectContent>
-              </Select>
+                <Label htmlFor="category">Category</Label>
+                <Select value={listing.category} onValueChange={(value) => setListing(prev => ({ ...prev, category: value }))}>
+                    <SelectTrigger>
+                        <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="crypto">Cryptocurrency</SelectItem>
+                        <SelectItem value="stock">Stocks</SelectItem>
+                        <SelectItem value="collectible">Collectibles</SelectItem>
+                        <SelectItem value="currency">Currency</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                </Select>
             </div>
 
             <div>
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                value={listing.description}
-                onChange={(e) => setListing(prev => ({ ...prev, description: e.target.value }))}
-                placeholder="Describe your item..."
-                rows={3}
-              />
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                    id="description"
+                    value={listing.description}
+                    onChange={(e) => setListing(prev => ({ ...prev, description: e.target.value }))}
+                    placeholder="Describe your item..."
+                    rows={3}
+                />
             </div>
 
             <div className="grid grid-cols-3 gap-2">
-              <div>
-                <Label htmlFor="offered-value">Value ($)</Label>
-                <Input
-                  id="offered-value"
-                  type="number"
-                  value={listing.offeredValue}
-                  onChange={(e) => setListing(prev => ({ ...prev, offeredValue: e.target.value }))}
-                  placeholder="0"
-                />
-              </div>
-              <div>
-                <Label htmlFor="wanted-value">Want ($)</Label>
-                <Input
-                  id="wanted-value"
-                  type="number"
-                  value={listing.wantedValue}
-                  onChange={(e) => setListing(prev => ({ ...prev, wantedValue: e.target.value }))}
-                  placeholder="0"
-                />
-              </div>
-              <div>
-                <Label htmlFor="location">Location</Label>
-                <Input
-                  id="location"
-                  value={listing.location}
-                  onChange={(e) => setListing(prev => ({ ...prev, location: e.target.value }))}
-                  placeholder="City"
-                />
-              </div>
+                <div>
+                    <Label htmlFor="offered-value">Value ($)</Label>
+                    <Input
+                        id="offered-value"
+                        type="number"
+                        value={listing.offeredValue}
+                        onChange={(e) => setListing(prev => ({ ...prev, offeredValue: e.target.value }))}
+                        placeholder="0"
+                    />
+                </div>
+                <div>
+                    <Label htmlFor="wanted-value">Want ($)</Label>
+                    <Input
+                        id="wanted-value"
+                        type="number"
+                        value={listing.wantedValue}
+                        onChange={(e) => setListing(prev => ({ ...prev, wantedValue: e.target.value }))}
+                        placeholder="0"
+                    />
+                </div>
+                <div>
+                    <Label htmlFor="location">Location</Label>
+                    <Input
+                        id="location"
+                        value={listing.location}
+                        onChange={(e) => setListing(prev => ({ ...prev, location: e.target.value }))}
+                        placeholder="City"
+                    />
+                </div>
             </div>
 
             <Button 
-              onClick={handleSubmit} 
-              className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700"
-              disabled={!listing.offeredAsset || !listing.wantedAsset}
+                onClick={handleSubmit} 
+                className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700"
+                disabled={!listing.offeredAsset || !listing.wantedAsset}
             >
-              🚀 List My Item
+                🚀 List My Item
             </Button>
-          </div>
+        </div>
         )}
       </DialogContent>
     </Dialog>

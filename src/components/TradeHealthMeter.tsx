@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -10,6 +10,7 @@ interface TradeHealthMeterProps {
   offeredValue?: number;
   wantedValue?: number;
   category: string;
+  listingId?: string; // Add this prop to create a consistent seed
 }
 
 export const TradeHealthMeter: React.FC<TradeHealthMeterProps> = ({
@@ -17,10 +18,23 @@ export const TradeHealthMeter: React.FC<TradeHealthMeterProps> = ({
   wantedAsset,
   offeredValue,
   wantedValue,
-  category
+  category,
+  listingId = '1' // Default fallback
 }) => {
-  // Calculate fairness score (0-100)
-  const calculateFairnessScore = () => {
+  // Calculate fairness score with consistent random values
+  const fairnessScore = useMemo(() => {
+    // Create a seeded random function based on listingId
+    const seededRandom = (seed: string) => {
+      let hash = 0;
+      for (let i = 0; i < seed.length; i++) {
+        const char = seed.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; // Convert to 32bit integer
+      }
+      // Normalize to 0-1 range
+      return Math.abs(hash) / 2147483647;
+    };
+
     let score = 50; // Base score
     
     // Value comparison (if both values are provided)
@@ -40,14 +54,12 @@ export const TradeHealthMeter: React.FC<TradeHealthMeterProps> = ({
     
     score += volatilityScores[category] || 0;
     
-    // Current demand simulation (random for demo)
-    const demandBonus = Math.random() * 20 - 10;
+    // Current demand simulation (consistent "random" for demo based on listingId)
+    const demandBonus = (seededRandom(listingId + 'demand') * 20) - 10;
     score += demandBonus;
     
     return Math.max(0, Math.min(100, score));
-  };
-
-  const fairnessScore = calculateFairnessScore();
+  }, [offeredValue, wantedValue, category, listingId, offeredAsset, wantedAsset]);
   
   const getScoreColor = (score: number) => {
     if (score >= 75) return 'text-green-600';
