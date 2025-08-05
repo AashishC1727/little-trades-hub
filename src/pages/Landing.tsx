@@ -4,7 +4,7 @@ import LiveMarketTicker from '@/components/LiveMarketTicker';
 import { YourNewsSection } from '@/components/YourNewsSection';
 import DashboardPreview from '@/components/DashboardPreview';
 import P2PTradingPreview from '@/components/P2PTradingPreview';
-import AssetDiscoveryPreview from '@/components/AssetDiscoveryPreview';
+import { EstimateReturns } from '@/components/EstimateReturns';
 import ProModePreview from '@/components/ProModePreview';
 import WaitlistSection from '@/components/WaitlistSection';
 import Footer from '@/components/Footer';
@@ -21,7 +21,7 @@ const Landing = () => {
       <DashboardPreview />
       {/* This component now contains the new features */}
       <P2PExchange />
-      <AssetDiscoveryPreview />
+      <EstimateReturns />
       <ProModePreview />
       <WaitlistSection />
       <Footer />
