@@ -27,6 +27,7 @@ import HelpCenter from "./pages/HelpCenter";
 import ApiDocs from "./pages/ApiDocs";
 import SystemStatus from "./pages/SystemStatus";
 import Security from "./pages/Security";
+import Retirement from "./pages/Articles/Retirement_Planning";
 
 const queryClient = new QueryClient();
 
@@ -54,10 +55,11 @@ const App = () => (
             <Route path="/terms" element={<Terms />} />
             <Route path="/cookie-policy" element={<CookiePolicy />} />
             <Route path="/accessibility" element={<Accessibility />} />
-        <Route path="/support" element={<EnhancedSupport />} />
-        <Route path="/learn" element={<Learn />} />
-        <Route path="/learn-library" element={<LearnLibrary />} />
-        <Route path="/learn/welcome-investing-101" element={<WelcomeInvesting />} />
+            <Route path="/support" element={<EnhancedSupport />} />
+            <Route path="/learn" element={<Learn />} />
+            <Route path="/learn-library" element={<LearnLibrary />} />
+            <Route path="/learn/welcome-investing-101" element={<WelcomeInvesting />} />
+            <Route path="/learn/retirement" element={<Retirement />} />
             <Route path="/help" element={<HelpCenter />} />
             <Route path="/api-docs" element={<ApiDocs />} />
             <Route path="/status" element={<SystemStatus />} />
