@@ -10,6 +10,8 @@ import WaitlistSection from '@/components/WaitlistSection';
 import Footer from '@/components/Footer';
 import CookieConsent from '@/components/CookieConsent';
 import { P2PExchange } from '@/components/P2PExchange';
+import ServiceAsInventory from '@/components/ServiceAsInventory';
+import BSUEconomy from '@/components/BSUEconomy';
 
 const Landing = () => {
   return (
@@ -21,6 +23,8 @@ const Landing = () => {
       <DashboardPreview />
       {/* This component now contains the new features */}
       <P2PExchange />
+      <ServiceAsInventory />
+      <BSUEconomy />
       <EstimateReturns />
       <ProModePreview />
       <WaitlistSection />

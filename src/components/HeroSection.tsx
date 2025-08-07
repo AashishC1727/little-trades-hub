@@ -89,65 +89,6 @@ const HeroSection = ({ image }: HeroSectionProps) => {
           </div>
         </div>
 
-        {/* Super Enhanced Value Props */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20 animate-slide-up">
-          <div className="group cursor-pointer">
-            <div className="relative flex flex-col items-center p-10 rounded-3xl bg-gradient-to-br from-white/90 to-green-50/80 backdrop-blur-lg border-2 border-white/60 hover:border-green-300/60 shadow-2xl hover:shadow-green-500/20 transition-all duration-700 hover:-translate-y-4 hover:rotate-2 transform-gpu">
-              <div className="relative mb-8">
-                <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-600 rounded-3xl blur-lg opacity-40 group-hover:opacity-70 transition-all duration-500 animate-pulse"></div>
-                <div className="absolute inset-0 bg-gradient-to-r from-green-300 to-emerald-500 rounded-3xl blur opacity-60 group-hover:blur-sm transition-all duration-500"></div>
-                <div className="relative bg-gradient-to-br from-green-500 via-emerald-600 to-teal-600 p-6 rounded-3xl shadow-xl group-hover:shadow-2xl transition-all duration-500">
-                  <TrendingUp className="w-10 h-10 text-white group-hover:scale-125 group-hover:rotate-12 transition-all duration-500" />
-                </div>
-                <div className="absolute -top-2 -right-2 w-4 h-4 bg-yellow-400 rounded-full opacity-0 group-hover:opacity-100 animate-ping transition-opacity duration-300"></div>
-              </div>
-              <h3 className="text-xl font-bold mb-4 text-slate-800 group-hover:text-green-700 transition-colors">Real-time Everything</h3>
-              <p className="text-sm text-slate-600 leading-relaxed group-hover:text-slate-700 transition-colors">Live prices, instant execution, zero delays</p>
-              <div className="absolute inset-0 bg-gradient-to-br from-green-50/70 to-emerald-100/50 rounded-3xl opacity-0 group-hover:opacity-100 transition-all duration-500 -z-10"></div>
-              <div className="absolute -top-3 -right-3 bg-green-500 text-white text-xs px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transform scale-75 group-hover:scale-100 transition-all duration-300">
-                ⚡ LIVE
-              </div>
-            </div>
-          </div>
-          
-          <div className="group cursor-pointer">
-            <div className="relative flex flex-col items-center p-10 rounded-3xl bg-gradient-to-br from-white/90 to-yellow-50/80 backdrop-blur-lg border-2 border-white/60 hover:border-yellow-300/60 shadow-2xl hover:shadow-yellow-500/20 transition-all duration-700 hover:-translate-y-4 hover:-rotate-2 transform-gpu">
-              <div className="relative mb-8">
-                <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-orange-600 rounded-3xl blur-lg opacity-40 group-hover:opacity-70 transition-all duration-500 animate-pulse"></div>
-                <div className="absolute inset-0 bg-gradient-to-r from-yellow-300 to-orange-500 rounded-3xl blur opacity-60 group-hover:blur-sm transition-all duration-500"></div>
-                <div className="relative bg-gradient-to-br from-yellow-500 via-orange-600 to-red-600 p-6 rounded-3xl shadow-xl group-hover:shadow-2xl transition-all duration-500">
-                  <Zap className="w-10 h-10 text-white group-hover:scale-125 group-hover:-rotate-12 transition-all duration-500" />
-                </div>
-                <div className="absolute -top-2 -right-2 w-4 h-4 bg-yellow-400 rounded-full opacity-0 group-hover:opacity-100 animate-ping transition-opacity duration-300 delay-100"></div>
-              </div>
-              <h3 className="text-xl font-bold mb-4 text-slate-800 group-hover:text-orange-700 transition-colors">Lightning Fast</h3>
-              <p className="text-sm text-slate-600 leading-relaxed group-hover:text-slate-700 transition-colors">Millisecond execution, global markets</p>
-              <div className="absolute inset-0 bg-gradient-to-br from-yellow-50/70 to-orange-100/50 rounded-3xl opacity-0 group-hover:opacity-100 transition-all duration-500 -z-10"></div>
-              <div className="absolute -top-3 -right-3 bg-orange-500 text-white text-xs px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transform scale-75 group-hover:scale-100 transition-all duration-300">
-                🚀 FAST
-              </div>
-            </div>
-          </div>
-          
-          <div className="group cursor-pointer">
-            <div className="relative flex flex-col items-center p-10 rounded-3xl bg-gradient-to-br from-white/90 to-purple-50/80 backdrop-blur-lg border-2 border-white/60 hover:border-purple-300/60 shadow-2xl hover:shadow-purple-500/20 transition-all duration-700 hover:-translate-y-4 hover:rotate-2 transform-gpu">
-              <div className="relative mb-8">
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-indigo-600 rounded-3xl blur-lg opacity-40 group-hover:opacity-70 transition-all duration-500 animate-pulse"></div>
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-300 to-indigo-500 rounded-3xl blur opacity-60 group-hover:blur-sm transition-all duration-500"></div>
-                <div className="relative bg-gradient-to-br from-purple-500 via-indigo-600 to-blue-600 p-6 rounded-3xl shadow-xl group-hover:shadow-2xl transition-all duration-500">
-                  <Shield className="w-10 h-10 text-white group-hover:scale-125 group-hover:rotate-12 transition-all duration-500" />
-                </div>
-                <div className="absolute -top-2 -right-2 w-4 h-4 bg-yellow-400 rounded-full opacity-0 group-hover:opacity-100 animate-ping transition-opacity duration-300 delay-200"></div>
-              </div>
-              <h3 className="text-xl font-bold mb-4 text-slate-800 group-hover:text-purple-700 transition-colors">Bank-grade Security</h3>
-              <p className="text-sm text-slate-600 leading-relaxed group-hover:text-slate-700 transition-colors">Your assets, protected at all costs</p>
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-50/70 to-indigo-100/50 rounded-3xl opacity-0 group-hover:opacity-100 transition-all duration-500 -z-10"></div>
-              <div className="absolute -top-3 -right-3 bg-purple-500 text-white text-xs px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transform scale-75 group-hover:scale-100 transition-all duration-300">
-                🛡️ SAFE
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* Super Enhanced CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-8 justify-center items-center animate-fade-in mb-20">
@@ -230,7 +171,7 @@ const HeroSection = ({ image }: HeroSectionProps) => {
       </div>
 
       {/* Enhanced Custom CSS for animations */}
-      <style jsx>{`
+      <style>{`
         @keyframes fade-in {
           from { opacity: 0; transform: translateY(40px) scale(0.95); }
           to { opacity: 1; transform: translateY(0) scale(1); }
