@@ -1,14 +1,17 @@
 import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import LiveMarketTicker from '@/components/LiveMarketTicker';
-import MarketPulseTicker from '@/components/MarketPulseTicker';
+import { YourNewsSection } from '@/components/YourNewsSection';
 import DashboardPreview from '@/components/DashboardPreview';
 import P2PTradingPreview from '@/components/P2PTradingPreview';
-import AssetDiscoveryPreview from '@/components/AssetDiscoveryPreview';
+import { EstimateReturns } from '@/components/EstimateReturns';
 import ProModePreview from '@/components/ProModePreview';
 import WaitlistSection from '@/components/WaitlistSection';
 import Footer from '@/components/Footer';
 import CookieConsent from '@/components/CookieConsent';
+import { P2PExchange } from '@/components/P2PExchange';
+import ServiceAsInventory from '@/components/ServiceAsInventory';
+import BSUEconomy from '@/components/BSUEconomy';
 
 const Landing = () => {
   return (
@@ -16,12 +19,13 @@ const Landing = () => {
       <Header />
       <HeroSection />
       <LiveMarketTicker />
-      <div className="container mx-auto px-4 py-8">
-        <MarketPulseTicker />
-      </div>
+      <YourNewsSection />
       <DashboardPreview />
-      <P2PTradingPreview />
-      <AssetDiscoveryPreview />
+      {/* This component now contains the new features */}
+      <P2PExchange />
+      <ServiceAsInventory />
+      <BSUEconomy />
+      <EstimateReturns />
       <ProModePreview />
       <WaitlistSection />
       <Footer />

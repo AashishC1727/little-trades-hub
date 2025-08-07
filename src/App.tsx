@@ -29,6 +29,10 @@ import SystemStatus from "./pages/SystemStatus";
 import Security from "./pages/Security";
 import Retirement from "./pages/Articles/Retirement_Planning";
 
+// Import the P2PExchange component which will be used on the new page.
+// Note: You might need to create a new page file like `src/pages/P2PExchangePage.tsx` to wrap this component.
+import { P2PExchange } from "@/components/P2PExchange";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -46,6 +50,13 @@ const App = () => (
               </ProtectedRoute>
             } />
             <Route path="/" element={<Landing />} />
+            {/* This new route leads to the full P2P exchange page where other features like Snap & List, Dispute Resolution, and Trade History would live. */}
+            <Route path="/p2p-exchange" element={
+                <div className="min-h-screen bg-background">
+                    {/* A full page would likely have a header and footer */}
+                    <P2PExchange />
+                </div>
+            } />
             <Route path="/search-results" element={<SearchResults />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
