@@ -1,15 +1,23 @@
+import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { ArticleCard } from "@/components/ArticleCard";
 import { Button } from "@/components/ui/button";
-import revenueIllustration from "@/assets/revenue-illustration.svg";
-import dividendIllustration from "@/assets/dividend-illustration.png";
-import balanceSheetIllustration from "@/assets/balance-sheet-illustration.svg";
-import ipoIllustration from "@/assets/ipo-illustration.svg";
-import stockIllustration from "@/assets/stock-illustration.svg";
-import etfIllustration from "@/assets/etf-illustration.svg";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
+import revenueIllustration from "@/assets/Learn/Revenue.png";
+import dividendIllustration from "@/assets/Learn/Dividend.png";
+import balanceSheetIllustration from "@/assets/Learn/Balance-sheet.png";
+import ipoIllustration from "@/assets/Learn/ipo.png";
+import stockIllustration from "@/assets/Learn/stocks.png";
+import etfIllustration from "@/assets/Learn/ETF.png";
+import heroImage from "@/assets/Learn/Hero.jpg";
+import Retirement from "@/assets/Learn/Retirement/Retirement-Planning.png";
 
 const Learn = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [visibleCount, setVisibleCount] = useState(6);
+
   const welcomeArticle = {
     title: "Welcome: Investing 101",
     excerpt: "The goal of investing is to grow your money for the future. Whatever you dream of—buying a home, going on vacation, or retiring—investing is likely to play an important part in your journey.",
@@ -32,7 +40,7 @@ const Learn = () => {
       title: "What is Dividend Yield?",
       excerpt: "Dividend yield is like a stock's bang for your buck… It's a ratio comparing the income an investor gets from holding a stock (that pays dividends) to the price of that stock, shown as a percentage.",
       link: "/learn/dividend-yield",
-      date: "Updated Jun 17, 2025", 
+      date: "Updated Jun 17, 2025",
       category: "little little Learn"
     },
     {
@@ -66,27 +74,80 @@ const Learn = () => {
       link: "/learn/etfs",
       date: "Updated Feb 28, 2025",
       category: "little little Learn"
+    },
+    {
+      image: Retirement,
+      title: "How Much Do You Really Need to Retire Happy?",
+      excerpt: "Let’s cut through the noise for a second. Most people already know they should be saving for retirement. The real question is: how much is enough to actually stop working and live the life you want?",
+      link: "/learn/retirement",
+      date: "Updated July 30, 2025",
+      category: "little little Learn"
     }
   ];
+
+  // Filter articles based on search query
+  const filteredArticles = featuredArticles.filter(article =>
+    article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    article.excerpt.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Get visible articles based on current count
+  const visibleArticles = filteredArticles.slice(0, visibleCount);
+
+  // Load more articles handler
+  const handleLoadMore = () => {
+    setVisibleCount(prev => prev + 6);
+  };
+
+  // Check if there are more articles to load
+  const hasMoreArticles = visibleCount < filteredArticles.length;
+
+  // Reset visible count when search query changes
+  useEffect(() => {
+    setVisibleCount(6);
+  }, [searchQuery]);
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
       <main className="pt-16">
-        {/* Hero Section - Robinhood Style */}
-        <section className="py-20 px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="mb-4">
-              <span className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Library</span>
+        {/* Hero Section - Two Column Layout */}
+        <section className="py-15 px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              {/* Left Column - Hero Image */}
+              <div className="order-2 lg:order-1">
+                <img
+                  src={heroImage}
+                  alt="Learn Hero"
+                  className="w-[1000px] h-[500px] rounded-lg"
+                />
+              </div>
+
+              {/* Right Column - Content */}
+              <div className="order-1 lg:order-2 text-center lg:text-left">
+                <div className="mb-4">
+                  <span className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Library</span>
+                </div>
+
+                <h1 className="text-4xl md:text-6xl font-bold mb-6 text-foreground">
+                  Explore the library
+                </h1>
+
+                {/* Search Bar */}
+                <div className="max-w-md mx-auto lg:mx-0 mb-12">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                    <Input
+                      placeholder="Search articles by title..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10 h-12 border-black"
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
-            
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 text-foreground">
-              Explore the library
-            </h1>
-            
-            <p className="text-xl text-muted-foreground mb-12">
-              Investing basics—in plain English.
-            </p>
           </div>
         </section>
 
@@ -97,7 +158,7 @@ const Learn = () => {
               <h2 className="text-2xl font-bold mb-2">Start Here</h2>
               <p className="text-muted-foreground">New to investing? Begin with the basics.</p>
             </div>
-            
+
             <div className="bg-gradient-to-r from-primary/5 to-secondary/5 rounded-lg p-8 border border-border/50">
               <ArticleCard
                 title={welcomeArticle.title}
@@ -117,9 +178,9 @@ const Learn = () => {
               <h2 className="text-2xl font-bold mb-2">Popular Articles</h2>
               <p className="text-muted-foreground">Learn the fundamentals of investing and trading.</p>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {featuredArticles.map((article, index) => (
+              {visibleArticles.map((article, index) => (
                 <ArticleCard
                   key={index}
                   image={article.image}
@@ -132,13 +193,27 @@ const Learn = () => {
                 />
               ))}
             </div>
-            
+
             {/* Load More Button */}
-            <div className="text-center mt-12">
-              <Button variant="outline" size="lg" className="px-8">
-                Load More Articles
-              </Button>
-            </div>
+            {hasMoreArticles && (
+              <div className="text-center mt-12">
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="px-8"
+                  onClick={handleLoadMore}
+                >
+                  Load More Articles
+                </Button>
+              </div>
+            )}
+
+            {/* Show total count */}
+            {filteredArticles.length > 0 && (
+              <div className="text-center mt-6 text-muted-foreground text-sm">
+                Showing {visibleArticles.length} of {filteredArticles.length} articles
+              </div>
+            )}
           </div>
         </section>
       </main>
