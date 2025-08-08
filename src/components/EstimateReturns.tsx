@@ -127,15 +127,17 @@ export const EstimateReturns = () => {
         </motion.div>
 
         <div className="max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-8">
+          <div className="flex flex-col lg:flex-row gap-8 items-stretch">
+
             {/* Input Form */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               viewport={{ once: true }}
+              className="flex-1"
             >
-              <Card className="h-fit">
+              <Card className="h-full">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Calculator className="w-5 h-5" />
@@ -249,9 +251,9 @@ export const EstimateReturns = () => {
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
               viewport={{ once: true }}
-              className={`transition-opacity duration-500 ${showResults ? 'opacity-100' : 'opacity-50'}`}
+              className={`flex-1 transition-opacity duration-500 ${showResults ? 'opacity-100' : 'opacity-50'}`}
             >
-              <Card className="h-fit">
+              <Card className="h-full">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <BarChart3 className="w-5 h-5" />

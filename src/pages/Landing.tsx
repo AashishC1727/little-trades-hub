@@ -3,7 +3,6 @@ import HeroSection from '@/components/HeroSection';
 import LiveMarketTicker from '@/components/LiveMarketTicker';
 import { YourNewsSection } from '@/components/YourNewsSection';
 import DashboardPreview from '@/components/DashboardPreview';
-import P2PTradingPreview from '@/components/P2PTradingPreview';
 import { EstimateReturns } from '@/components/EstimateReturns';
 import ProModePreview from '@/components/ProModePreview';
 import WaitlistSection from '@/components/WaitlistSection';
