@@ -105,9 +105,13 @@ const Header = () => {
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center space-x-2">
-            <button onClick={() => navigate('/')} className="flex items-center space-x-2">
-              <h1 className="text-xl font-bold">LITTLE little</h1>
+          <div className="flex items-center">
+            <button onClick={() => navigate('/')} className="flex items-center">
+              <img 
+                src="/lovable-uploads/76188045-2892-4c59-a02d-6fa36fbe8f96.png" 
+                alt="Little Little logo" 
+                className="max-h-8 md:max-h-10 w-auto object-contain"
+              />
             </button>
           </div>
 
