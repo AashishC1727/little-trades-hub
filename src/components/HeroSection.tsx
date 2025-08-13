@@ -6,7 +6,7 @@ interface HeroSectionProps {
 
 const HeroSection = ({ image }: HeroSectionProps) => {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-100/60 px-4">
+    <section className="relative py-10 overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-100/60 px-4">
       {/* Enhanced Background Effects */}
       <div className="absolute inset-0">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-blue-400/30 to-purple-500/25 rounded-full blur-3xl animate-pulse"></div>
@@ -39,23 +39,24 @@ const HeroSection = ({ image }: HeroSectionProps) => {
       </div>
       
       <div className="relative z-10 text-center max-w-4xl mx-auto">
-        {/* Logo */}
-        <div className="mb-6">
+        {/* Logo and Text Row */}
+        <div className="flex flex-col sm:flex-row items-center justify-center mb-6 gap-3 sm:gap-3">
+          {/* Logo */}
           <img 
             src={logoLl} 
             alt="Little Little logo" 
-            className="w-full max-w-[140px] md:max-w-[220px] h-auto mx-auto"
+            className="h-9 md:h-12 w-auto flex-shrink-0"
           />
-        </div>
-
-        {/* Main Text Block */}
-        <div className="mb-8">
-          <h1 className="text-[48px] md:text-[72px] font-extrabold tracking-[-1px] leading-none mb-2" style={{ color: '#222B45' }}>
-            LITTLE
-          </h1>
-          <h2 className="text-[32px] md:text-[48px] font-normal leading-none" style={{ color: '#5B6470' }}>
-            little
-          </h2>
+          
+          {/* Text Block */}
+          <div className="flex items-baseline gap-2">
+            <h1 className="text-[32px] md:text-[48px] font-bold tracking-[-1px] leading-none" style={{ color: '#222B45' }}>
+              LITTLE
+            </h1>
+            <h2 className="text-[32px] md:text-[48px] font-normal leading-none" style={{ color: '#5B6470' }}>
+              little
+            </h2>
+          </div>
         </div>
 
         {/* Tagline */}
