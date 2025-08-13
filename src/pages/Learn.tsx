@@ -11,7 +11,7 @@ import balanceSheetIllustration from "@/assets/Learn/Balance-sheet.png";
 import ipoIllustration from "@/assets/Learn/ipo.png";
 import stockIllustration from "@/assets/Learn/stocks.png";
 import etfIllustration from "@/assets/Learn/ETF.png";
-import heroImage from "@/assets/Learn/Hero.jpg";
+// Hero image is now loaded directly from public uploads
 import Retirement from "@/assets/Learn/Retirement/Retirement-Planning.png";
 
 const Learn = () => {
@@ -118,7 +118,7 @@ const Learn = () => {
               {/* Left Column - Hero Image */}
               <div className="order-2 lg:order-1">
                 <img
-                  src={heroImage}
+                  src="/lovable-uploads/5e824ee6-1bf2-48e1-af50-66316b11a2ad.png"
                   alt="Learn Hero"
                   className="w-[1000px] h-[500px] rounded-lg"
                 />
