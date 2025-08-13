@@ -120,7 +120,7 @@ const Learn = () => {
                 <img
                   src="/lovable-uploads/5e824ee6-1bf2-48e1-af50-66316b11a2ad.png"
                   alt="Learn Hero"
-                  className="w-[1000px] h-[500px] rounded-lg"
+                  className="max-w-full h-auto object-contain rounded-lg"
                 />
               </div>
 
