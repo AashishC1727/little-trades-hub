@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { supabase } from '@/integrations/supabase/client';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -36,14 +37,7 @@ export const SnapAndListButton: React.FC<SnapAndListButtonProps> = ({ onListingC
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  // NEW: Generate random user ID (UUID v4 format)
-  const generateRandomUserId = (): string => {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      const r = Math.random() * 16 | 0;
-      const v = c == 'x' ? r : (r & 0x3 | 0x8);
-      return v.toString(16);
-    });
-  };
+
 
   // NEW: Convert data URL to File object
   const dataURLToFile = (dataUrl: string, filename: string): File => {
@@ -169,7 +163,7 @@ export const SnapAndListButton: React.FC<SnapAndListButtonProps> = ({ onListingC
       const formData = new FormData();
       
       // Generate random user ID and timestamp
-      const userId = generateRandomUserId();
+      const userId = '41e2e81b-972c-4e03-af7c-6a3aa83b27b4';
       const timestamp = new Date().toISOString();
       
       // Append all required fields
