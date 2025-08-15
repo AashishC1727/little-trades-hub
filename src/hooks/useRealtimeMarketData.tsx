@@ -54,12 +54,11 @@ export const useRealtimeMarketData = ({
       setError(null);
       const idsParam = ids.join(',');
       
-      const { data: response, error } = await supabase.functions.invoke('market-snapshot', {
-        body: { ids: idsParam },
-        method: 'GET'
-      });
+      const url = `https://iwbdeakpqfljskpxjejm.supabase.co/functions/v1/market-snapshot?ids=${encodeURIComponent(idsParam)}`;
+      const res = await fetch(url, { method: 'GET' });
+      const response = await res.json();
       
-      if (error) throw error;
+      if (!res.ok) throw new Error(response?.error || 'Snapshot request failed');
       if (!response.success) throw new Error(response.error);
       
       const newDataMap = new Map<string, MarketData>();
