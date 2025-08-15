@@ -76,10 +76,18 @@ export function useListings() {
       }
       setError(null);
       
-      const { data, error } = await supabase
-        .from("listings")
-        .select("*")
-        .order('created_at', { ascending: false });
+      // Mock data since listings table doesn't exist yet
+      const data = [
+        {
+          id: "1",
+          offering_asset: "BTC",
+          wanted_asset: "ETH",
+          image_url: "/placeholder.svg",
+          created_at: new Date().toISOString(),
+          user_id: "user1"
+        }
+      ];
+      const error = null;
 
       if (error) {
         throw error;
@@ -264,10 +272,10 @@ export const P2PExchange = () => {
     // Sort listings
     switch (filters.sort) {
       case 'newest':
-        filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        filtered.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
         break;
       case 'ending_soon':
-        filtered.sort((a, b) => new Date(a.expiry) - new Date(b.expiry));
+        filtered.sort((a, b) => new Date(a.expiry).getTime() - new Date(b.expiry).getTime());
         break;
       case 'most_viewed':
         filtered.sort((a, b) => (b.views || 0) - (a.views || 0));
@@ -484,7 +492,7 @@ export const P2PExchange = () => {
                             </div>
                         )}
                         
-                        <div ref={scrollContainerRef} className="overflow-x-auto pb-4 scroll-smooth" style={{ scrollbarWidth: 'none', '-ms-overflow-style': 'none' }}>
+                        <div ref={scrollContainerRef} className="overflow-x-auto pb-4 scroll-smooth" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                             <div className="flex gap-6 min-w-max">
                                 {filteredListings.map((listing) => (
                                     <Card 

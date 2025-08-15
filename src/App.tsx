@@ -28,6 +28,7 @@ import ApiDocs from "./pages/ApiDocs";
 import SystemStatus from "./pages/SystemStatus";
 import Security from "./pages/Security";
 import Retirement from "./pages/Articles/Retirement_Planning";
+import RealtimeMarket from "./pages/RealtimeMarket";
 
 // Import the P2PExchange component which will be used on the new page.
 // Note: You might need to create a new page file like `src/pages/P2PExchangePage.tsx` to wrap this component.
@@ -75,6 +76,7 @@ const App = () => (
             <Route path="/api-docs" element={<ApiDocs />} />
             <Route path="/status" element={<SystemStatus />} />
             <Route path="/security" element={<Security />} />
+            <Route path="/market" element={<RealtimeMarket />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
