@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,7 +6,9 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { ArrowLeftRight, Calendar, Eye, Filter, History, MapPin, Plus, Search, TrendingUp, List, Tag, ShieldCheck } from 'lucide-react';
+import { ArrowLeftRight, Calendar, Eye, Filter, History, MapPin, Plus, Search, TrendingUp, List, Tag, ShieldCheck, ChevronLeft, ChevronRight } from 'lucide-react';
+
+import { supabase } from "@/integrations/supabase/client";
 
 // --- Importing all the new feature components ---
 import { TradeHealthMeter } from '@/components/TradeHealthMeter';
@@ -29,6 +31,16 @@ const generateConsistentRandomData = (seed) => {
   const rand4 = seededRandom(seed * 4);
   const rand5 = seededRandom(seed * 5);
   const rand6 = seededRandom(seed * 6);
+  const rand7 = seededRandom(seed * 7);
+  const rand8 = seededRandom(seed * 8);
+  const rand9 = seededRandom(seed * 9);
+  
+  // Random names for users
+  const names = [
+    'Rajesh Kumar', 'Priya Sharma', 'Amit Singh', 'Neha Patel', 'Vikram Shah',
+    'Anita Gupta', 'Rohit Mehta', 'Kavya Reddy', 'Sanjay Agarwal', 'Pooja Jain',
+    'Arjun Nair', 'Deepika Rao', 'Karan Malhotra', 'Shreya Das', 'Nikhil Bose'
+  ];
   
   return {
     rating: parseFloat((4.2 + rand1 * 0.8).toFixed(1)),
@@ -37,70 +49,101 @@ const generateConsistentRandomData = (seed) => {
     responseTime: parseFloat((rand4 * 6).toFixed(2)),
     successfulTrades: Math.floor(rand5 * 25) + 3,
     trustScore: parseFloat((50 + rand6 * 40).toFixed(2)),
-    authenticityScore: parseFloat((60 + rand1 * 35).toFixed(2))
+    authenticityScore: parseFloat((60 + rand1 * 35).toFixed(2)),
+    views: Math.floor(rand7 * 300) + 10,
+    expiry: new Date(Date.now() + (Math.floor(rand8 * 14) + 1) * 24 * 60 * 60 * 1000).toISOString(),
+    status: rand9 > 0.8 ? 'expired' : 'active',
+    profiles: {
+      display_name: names[Math.floor(rand1 * names.length)],
+      avatar_url: `https://i.pravatar.cc/150?u=${seed}`
+    }
   };
 };
 
-// Mock Data with English descriptions - now with consistent random data
-const createMockListings = () => [
-  {
-    id: '1',
-    created_at: '2025-08-02T12:00:00Z',
-    offered_asset: 'Vintage Rolex Watch',
-    wanted_asset: '1.5 ETH',
-    category: 'collectible',
-    description: 'A classic 1985 Rolex Submariner in excellent condition.',
-    asset_image_url: 'https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=500&q=80',
-    location: 'Mumbai, India',
-    offered_value: 4500,
-    wanted_value: 4800,
-    expiry: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
-    status: 'active',
-    views: 120,
-    profiles: {
-      display_name: 'Rajesh Kumar',
-      avatar_url: 'https://i.pravatar.cc/150?u=priya'
+// Custom hook for fetching listings from Supabase
+export function useListings() {
+  const [listings, setListings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchListings = async (isRefresh = false) => {
+    try {
+      if (isRefresh) {
+        setRefreshing(true);
+      } else {
+        setLoading(true);
+      }
+      setError(null);
+      
+      const { data, error } = await supabase
+        .from("listings")
+        .select("*")
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        throw error;
+      }
+
+      // Add consistent random data to each listing
+      const listingsWithRandomData = data.map(listing => {
+        const seed = parseInt(listing.id.replace(/\D/g, '')) || Math.floor(Math.random() * 1000);
+        const randomData = generateConsistentRandomData(seed);
+        return { 
+          ...listing,
+          // Map your actual column names
+          offered_asset: listing.offering_asset,
+          wanted_asset: listing.wanted_asset,
+          asset_image_url: listing.image_url,
+          // Add random generated data
+          views: randomData.views,
+          expiry: randomData.expiry,
+          status: randomData.status,
+          profiles: randomData.profiles,
+          trustMetrics: {
+            rating: randomData.rating,
+            totalReviews: randomData.totalReviews,
+            verified: randomData.verified,
+            responseTime: randomData.responseTime,
+            successfulTrades: randomData.successfulTrades,
+            trustScore: randomData.trustScore
+          },
+          authenticityScore: randomData.authenticityScore
+        };
+      });
+
+      setListings(listingsWithRandomData);
+    } catch (err) {
+      console.error("Error fetching listings:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
     }
-  },
-  {
-    id: '2',
-    created_at: '2025-08-01T18:30:00Z',
-    offered_asset: '10 Shares of AAPL',
-    wanted_asset: 'Gaming PC (RTX 4090)',
-    category: 'stock',
-    description: 'Trading 10 shares of Apple Inc. for a high-end gaming PC.',
-    asset_image_url: 'https://images.unsplash.com/photo-1593642702821-c8da6771f0c6?w=500&q=80',
-    location: 'Bangalore, India',
-    offered_value: 2000,
-    wanted_value: 2100,
-    expiry: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
-    status: 'active',
-    views: 250,
-    profiles: {
-      display_name: 'Priya Sharma',
-      avatar_url: 'https://i.pravatar.cc/150?u=rajesh'
-    }
-  },
-  {
-    id: '3',
-    created_at: '2025-08-02T09:00:00Z',
-    offered_asset: '0.5 BTC',
-    wanted_asset: '2024 Royal Enfield Bike',
-    category: 'crypto',
-    description: 'Half a Bitcoin for a new or slightly used Royal Enfield bike.',
-    asset_image_url: 'https://images.unsplash.com/photo-1623227413711-25ee4388dae3?q=80&w=2072&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    location: 'Delhi, India',
-    offered_value: 35000,
-    wanted_value: 34000,
-    expiry: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString(),
-    status: 'active',
-    views: 88,
-    profiles: {
-      display_name: 'Amit Singh',
-      avatar_url: 'https://i.pravatar.cc/150?u=amit'
-    }
-  }
-];
+  };
+
+  useEffect(() => {
+    fetchListings();
+
+    // Subscribe to real-time changes
+    const subscription = supabase
+      .channel("listings_changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "listings" },
+        () => {
+          fetchListings(true); // Refresh without full loading state
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(subscription);
+    };
+  }, []);
+
+  return { listings, loading, error, refreshing, refetch: () => fetchListings(true) };
+}
 
 const TradeHistorySummary = () => (
     <Card>
@@ -151,32 +194,8 @@ const QuickActions = () => (
 );
 
 export const P2PExchange = () => {
-  // Generate listings with consistent random data using useMemo
-  const listings = useMemo(() => {
-    const mockListings = createMockListings();
-    
-    // Generate consistent random data for each listing
-    return mockListings.map(listing => {
-      const seed = parseInt(listing.id); // Use listing ID as seed
-      const randomData = generateConsistentRandomData(seed);
-      
-      return {
-        ...listing,
-        trustMetrics: {
-          rating: randomData.rating,
-          totalReviews: randomData.totalReviews,
-          verified: randomData.verified,
-          responseTime: randomData.responseTime,
-          successfulTrades: randomData.successfulTrades,
-          trustScore: randomData.trustScore
-        },
-        authenticityScore: randomData.authenticityScore
-      };
-    });
-  }, []); // Empty dependency array means this only runs once
-
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  // Use the custom hook to fetch listings from Supabase
+  const { listings, loading, error, refreshing, refetch } = useListings();
   
   const [filters, setFilters] = useState({
     category: 'all',
@@ -184,6 +203,11 @@ export const P2PExchange = () => {
     location: ''
   });
   const [searchTerm, setSearchTerm] = useState('');
+
+  // Refs and state for horizontal scroll
+  const scrollContainerRef = useRef(null);
+  const [showLeftScroll, setShowLeftScroll] = useState(false);
+  const [showRightScroll, setShowRightScroll] = useState(false);
 
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));
@@ -216,26 +240,97 @@ export const P2PExchange = () => {
     return colors[category] || colors.other;
   };
 
-  const filteredListings = (listings || []).filter(listing => {
-    const searchLower = searchTerm.toLowerCase();
-    const categoryFilter = filters.category === 'all' || listing.category === filters.category;
+  // Filter and sort listings
+  const filteredListings = useMemo(() => {
+    if (!listings || listings.length === 0) return [];
     
-    const searchFilter = (
-      listing.offered_asset.toLowerCase().includes(searchLower) ||
-      listing.wanted_asset.toLowerCase().includes(searchLower) ||
-      (listing.description && listing.description.toLowerCase().includes(searchLower)) ||
-      (listing.profiles && listing.profiles.display_name && listing.profiles.display_name.toLowerCase().includes(searchLower))
-    );
+    let filtered = listings.filter(listing => {
+      const searchLower = searchTerm.toLowerCase();
+      const categoryFilter = filters.category === 'all' || listing.category === filters.category;
+      
+      const searchFilter = (
+        listing.offered_asset?.toLowerCase().includes(searchLower) ||
+        listing.wanted_asset?.toLowerCase().includes(searchLower) ||
+        (listing.description && listing.description.toLowerCase().includes(searchLower)) ||
+        (listing.profiles && listing.profiles.display_name && listing.profiles.display_name.toLowerCase().includes(searchLower))
+      );
 
-    return categoryFilter && searchFilter;
-  });
+      const locationFilter = !filters.location || 
+        (listing.location && listing.location.toLowerCase().includes(filters.location.toLowerCase()));
+
+      return categoryFilter && searchFilter && locationFilter;
+    });
+
+    // Sort listings
+    switch (filters.sort) {
+      case 'newest':
+        filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        break;
+      case 'ending_soon':
+        filtered.sort((a, b) => new Date(a.expiry) - new Date(b.expiry));
+        break;
+      case 'most_viewed':
+        filtered.sort((a, b) => (b.views || 0) - (a.views || 0));
+        break;
+      case 'high_value':
+        filtered.sort((a, b) => (b.offered_value || 0) - (a.offered_value || 0));
+        break;
+      default:
+        break;
+    }
+
+    return filtered;
+  }, [listings, searchTerm, filters]);
+
+  const refreshListings = () => {
+    refetch(); // Use the refetch function from the hook
+  };
+
+  // --- Scroll Logic ---
+  const checkScrollability = () => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      const { scrollWidth, clientWidth, scrollLeft } = container;
+      setShowLeftScroll(scrollLeft > 0);
+      // Use a small tolerance for floating point inaccuracies
+      setShowRightScroll(scrollLeft < scrollWidth - clientWidth - 1);
+    }
+  };
+
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      checkScrollability(); // Initial check
+      container.addEventListener('scroll', checkScrollability);
+      
+      // Check on window resize as well
+      const resizeObserver = new ResizeObserver(checkScrollability);
+      resizeObserver.observe(container);
+
+      return () => {
+        container.removeEventListener('scroll', checkScrollability);
+        resizeObserver.unobserve(container);
+      };
+    }
+  }, [filteredListings]); // Rerun when listings change
+
+  const scroll = (direction) => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      const scrollAmount = container.clientWidth * 0.8; // Scroll by 80% of visible width
+      container.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth',
+      });
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
             {/* --- Filters Sidebar --- */}
             <aside className="lg:w-72 flex-shrink-0 space-y-6">
-                <SnapAndListButton onListingCreated={() => console.log("New listing created!")} />
+                <SnapAndListButton onListingCreated={refreshListings} />
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-lg">
@@ -306,11 +401,27 @@ export const P2PExchange = () => {
             </aside>
 
             {/* --- Main Content --- */}
-            <main className="flex-1">
+            <main className="flex-1 min-w-0"> {/* Added min-w-0 to prevent overflow issues */}
                 <div className="flex items-center justify-between mb-6">
                     <div>
                         <h1 className="text-4xl font-bold tracking-tight">P2P Exchange</h1>
                         <p className="text-muted-foreground mt-1">Trade any asset with other users</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        {refreshing && (
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full"></div>
+                                Refreshing...
+                            </div>
+                        )}
+                        <Button 
+                            onClick={refreshListings} 
+                            variant="outline" 
+                            size="sm"
+                            disabled={refreshing}
+                        >
+                            {refreshing ? 'Refreshing...' : 'Refresh'}
+                        </Button>
                     </div>
                 </div>
 
@@ -328,103 +439,147 @@ export const P2PExchange = () => {
                 )}
 
                 {error && (
-                    <Card className="border-red-500/50 bg-red-50 dark:bg-red-950/20">
+                    <Card className="border-red-500/50 bg-red-50 dark:bg-red-950/20 mb-6">
                         <CardContent className="p-6">
                             <p className="text-red-600 dark:text-red-400">Error loading listings: {error}</p>
+                            <Button 
+                                onClick={refreshListings} 
+                                variant="outline" 
+                                className="mt-4"
+                                disabled={refreshing}
+                            >
+                                {refreshing ? 'Retrying...' : 'Try Again'}
+                            </Button>
                         </CardContent>
                     </Card>
                 )}
 
-                {!loading && !error && listings && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                        {filteredListings.map((listing) => (
-                            <Card 
-                                key={listing.id} 
-                                className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col"
-                                onClick={() => handleListingClick(listing.id)}
-                            >
-                                <CardHeader>
-                                     <TrustReputationScore
-                                        userName={listing.profiles?.display_name || 'Anonymous'}
-                                        avatarUrl={listing.profiles?.avatar_url}
-                                        metrics={listing.trustMetrics}
-                                        size="medium"
-                                    />
-                                </CardHeader>
-                                <CardContent className="p-4 pt-0 space-y-3 flex-grow">
-                                    {listing.asset_image_url && (
-                                        <img 
-                                            src={listing.asset_image_url} 
-                                            alt={listing.offered_asset}
-                                            className="w-full h-40 object-cover rounded-md mb-3"
-                                        />
-                                    )}
-                                    <div className="flex items-center justify-between">
-                                        <Badge 
-                                            variant="secondary" 
-                                            className={`${getCategoryColor(listing.category)} text-white text-xs`}
-                                        >
-                                            {listing.category}
-                                        </Badge>
-                                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                            <Eye className="h-3 w-3" />
-                                            {listing.views || 0}
-                                        </div>
-                                    </div>
-                                    
-                                    <div className="flex items-center justify-center text-center">
-                                        <div className="flex-1">
-                                            <p className="text-xs text-muted-foreground">Offering</p>
-                                            <p className="font-semibold text-sm truncate">{listing.offered_asset}</p>
-                                        </div>
-                                        <ArrowLeftRight className="h-4 w-4 text-muted-foreground mx-2 flex-shrink-0" />
-                                        <div className="flex-1">
-                                            <p className="text-xs text-muted-foreground">Wants</p>
-                                            <p className="font-semibold text-sm truncate">{listing.wanted_asset}</p>
-                                        </div>
-                                    </div>
-                                    
-                                    <TradeHealthMeter
-                                        offeredAsset={listing.offered_asset}
-                                        wantedAsset={listing.wanted_asset}
-                                        offeredValue={listing.offered_value}
-                                        wantedValue={listing.wanted_value}
-                                        category={listing.category}
-                                        listingId={listing.id}
-                                    />
-                                    
-                                    <AssetAuthenticity
-                                        listingId={listing.id}
-                                        isOwner={false}
-                                        authenticityScore={listing.authenticityScore}
-                                    />
-                                </CardContent>
-                                <div className="p-4 pt-2 border-t mt-auto">
-                                     <div className="flex items-center justify-between gap-1 text-xs text-muted-foreground">
-                                        {listing.location && (
-                                            <div className="flex items-center gap-1 truncate">
-                                                <MapPin className="h-3 w-3" />
-                                                {listing.location}
+                {!loading && !error && filteredListings.length > 0 && (
+                    <div className="relative">
+                        {/* Left Scroll Button */}
+                        {showLeftScroll && (
+                            <div className="absolute left-0 top-1/2 -translate-y-1/2 z-10 -translate-x-4">
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    className="rounded-full h-10 w-10 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm shadow-lg hover:bg-white dark:hover:bg-gray-900"
+                                    onClick={() => scroll('left')}
+                                >
+                                    <ChevronLeft className="h-6 w-6" />
+                                </Button>
+                            </div>
+                        )}
+                        
+                        {/* Right Scroll Button */}
+                        {showRightScroll && (
+                            <div className="absolute right-0 top-1/2 -translate-y-1/2 z-10 translate-x-4">
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    className="rounded-full h-10 w-10 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm shadow-lg hover:bg-white dark:hover:bg-gray-900"
+                                    onClick={() => scroll('right')}
+                                >
+                                    <ChevronRight className="h-6 w-6" />
+                                </Button>
+                            </div>
+                        )}
+                        
+                        <div ref={scrollContainerRef} className="overflow-x-auto pb-4 scroll-smooth" style={{ scrollbarWidth: 'none', '-ms-overflow-style': 'none' }}>
+                            <div className="flex gap-6 min-w-max">
+                                {filteredListings.map((listing) => (
+                                    <Card 
+                                        key={listing.id} 
+                                        className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all flex-shrink-0 w-80 flex flex-col"
+                                        onClick={() => handleListingClick(listing.id)}
+                                    >
+                                        <CardHeader>
+                                             <TrustReputationScore
+                                                userName={listing.profiles?.display_name || 'Anonymous'}
+                                                avatarUrl={listing.profiles?.avatar_url}
+                                                metrics={listing.trustMetrics}
+                                                size="medium"
+                                             />
+                                        </CardHeader>
+                                        <CardContent className="p-4 pt-0 space-y-3 flex-grow">
+                                            {listing.asset_image_url && (
+                                                <img 
+                                                    src={listing.asset_image_url} 
+                                                    alt={listing.offered_asset}
+                                                    className="w-full h-40 object-cover rounded-md mb-3"
+                                                />
+                                            )}
+                                            <div className="flex items-center justify-between">
+                                                <Badge 
+                                                    variant="secondary" 
+                                                    className={`${getCategoryColor(listing.category)} text-white text-xs`}
+                                                >
+                                                    {listing.category}
+                                                </Badge>
+                                                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                                    <Eye className="h-3 w-3" />
+                                                    {listing.views || 0}
+                                                </div>
                                             </div>
-                                        )}
-                                        <div className="flex items-center gap-1 ml-auto">
-                                            <Calendar className="h-3 w-3" />
-                                            {formatTimeLeft(listing.expiry)}
+                                            
+                                            <div className="flex items-center justify-center text-center">
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-xs text-muted-foreground">Offering</p>
+                                                    <p className="font-semibold text-sm truncate">{listing.offered_asset}</p>
+                                                </div>
+                                                <ArrowLeftRight className="h-4 w-4 text-muted-foreground mx-2 flex-shrink-0" />
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-xs text-muted-foreground">Wants</p>
+                                                    <p className="font-semibold text-sm truncate">{listing.wanted_asset}</p>
+                                                </div>
+                                            </div>
+                                            
+                                            <TradeHealthMeter
+                                                offeredAsset={listing.offered_asset}
+                                                wantedAsset={listing.wanted_asset}
+                                                offeredValue={listing.offered_value}
+                                                wantedValue={listing.wanted_value}
+                                                category={listing.category}
+                                                listingId={listing.id}
+                                             // Good fairness score for now
+                                            />
+                                            
+                                            <AssetAuthenticity
+                                                listingId={listing.id}
+                                                isOwner={false}
+                                                authenticityScore={listing.authenticityScore}
+                                            />
+                                        </CardContent>
+                                        <div className="p-4 pt-2 border-t mt-auto">
+                                             <div className="flex items-center justify-between gap-1 text-xs text-muted-foreground">
+                                                {listing.location && (
+                                                    <div className="flex items-center gap-1 truncate">
+                                                        <MapPin className="h-3 w-3" />
+                                                        {listing.location}
+                                                    </div>
+                                                )}
+                                                <div className="flex items-center gap-1 ml-auto">
+                                                    <Calendar className="h-3 w-3" />
+                                                    {formatTimeLeft(listing.expiry)}
+                                                </div>
+                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-                            </Card>
-                        ))}
+                                    </Card>
+                                ))}
+                            </div>
+                        </div>
                     </div>
                 )}
 
-                {!loading && !error && listings && filteredListings.length === 0 && (
+                {!loading && !error && filteredListings.length === 0 && (
                     <Card>
                         <CardContent className="p-8 text-center">
                             <TrendingUp className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
                             <h3 className="text-lg font-semibold mb-2">No listings found</h3>
                             <p className="text-muted-foreground mb-4">
-                                {searchTerm || filters.category !== 'all' ? 'Try adjusting your filters' : 'Be the first to create a listing!'}
+                                {searchTerm || filters.category !== 'all' || filters.location ? 
+                                    'Try adjusting your filters' : 
+                                    'Be the first to create a listing!'
+                                }
                             </p>
                             <Button onClick={() => { /* Logic to trigger SnapAndListButton will go here */ }}>
                                 <Plus className="h-4 w-4 mr-2" />
