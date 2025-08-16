@@ -28,7 +28,7 @@ import { useRealtimeMarketData, MarketData } from '@/hooks/useRealtimeMarketData
 import { MarketDetailPanel } from '@/components/MarketDetailPanel';
 
 // Default assets to load (using currently supported universe)
-const DEFAULT_ASSETS = ['AAPL', 'MSFT', 'ETH', 'GOOGL', 'AMZN', 'TSLA', 'REIT'];
+const DEFAULT_ASSETS = ['AAPL', 'MSFT', 'ETH', 'GOOGL', 'AMZN', 'TSLA', 'REIT', 'SPY', 'BTC', 'GLD'];
 
 // KPI definitions with alias matching to provider ids
 const KPI_DEFS = [
