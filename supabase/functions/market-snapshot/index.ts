@@ -13,30 +13,30 @@ const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 // Asset definitions with providers
-const ASSETS = {
+const ASSETS: Record<string, { name: string; assetClass: string; exchange: string; currency: string; provider: 'finnhub' | 'coingecko'; providerSymbol?: string; }> = {
   // Equities
-  'AAPL': { name: 'Apple Inc.', assetClass: 'Equity', exchange: 'NASDAQ', currency: 'USD', provider: 'finnhub' },
-  'MSFT': { name: 'Microsoft Corp', assetClass: 'Equity', exchange: 'NASDAQ', currency: 'USD', provider: 'finnhub' },
-  'GOOGL': { name: 'Alphabet Inc.', assetClass: 'Equity', exchange: 'NASDAQ', currency: 'USD', provider: 'finnhub' },
-  'AMZN': { name: 'Amazon.com Inc', assetClass: 'Equity', exchange: 'NASDAQ', currency: 'USD', provider: 'finnhub' },
-  'TSLA': { name: 'Tesla, Inc.', assetClass: 'Equity', exchange: 'NASDAQ', currency: 'USD', provider: 'finnhub' },
+  'AAPL': { name: 'Apple Inc.', assetClass: 'Equity', exchange: 'NASDAQ', currency: 'USD', provider: 'finnhub', providerSymbol: 'AAPL' },
+  'MSFT': { name: 'Microsoft Corp', assetClass: 'Equity', exchange: 'NASDAQ', currency: 'USD', provider: 'finnhub', providerSymbol: 'MSFT' },
+  'GOOGL': { name: 'Alphabet Inc.', assetClass: 'Equity', exchange: 'NASDAQ', currency: 'USD', provider: 'finnhub', providerSymbol: 'GOOGL' },
+  'AMZN': { name: 'Amazon.com Inc', assetClass: 'Equity', exchange: 'NASDAQ', currency: 'USD', provider: 'finnhub', providerSymbol: 'AMZN' },
+  'TSLA': { name: 'Tesla, Inc.', assetClass: 'Equity', exchange: 'NASDAQ', currency: 'USD', provider: 'finnhub', providerSymbol: 'TSLA' },
   
-  // Indices
-  'SPY': { name: 'S&P 500', assetClass: 'Index', exchange: 'NYSE', currency: 'USD', provider: 'finnhub' },
-  'QQQ': { name: 'NASDAQ 100', assetClass: 'Index', exchange: 'NASDAQ', currency: 'USD', provider: 'finnhub' },
-  'REIT': { name: 'REIT Index', assetClass: 'RealEstate', exchange: 'NYSE', currency: 'USD', provider: 'finnhub' },
+  // Indices / Funds
+  'SPY': { name: 'S&P 500', assetClass: 'Index', exchange: 'NYSE', currency: 'USD', provider: 'finnhub', providerSymbol: 'SPY' },
+  'QQQ': { name: 'NASDAQ 100', assetClass: 'Index', exchange: 'NASDAQ', currency: 'USD', provider: 'finnhub', providerSymbol: 'QQQ' },
+  'REIT': { name: 'REIT Index', assetClass: 'RealEstate', exchange: 'NYSE', currency: 'USD', provider: 'finnhub', providerSymbol: 'VNQ' },
   
   // Crypto
   'BTC': { name: 'Bitcoin', assetClass: 'Crypto', exchange: 'Global', currency: 'USD', provider: 'coingecko' },
   'ETH': { name: 'Ethereum', assetClass: 'Crypto', exchange: 'Global', currency: 'USD', provider: 'coingecko' },
   
-  // Commodities
-  'GLD': { name: 'Gold', assetClass: 'Commodity', exchange: 'NYSE', currency: 'USD', provider: 'finnhub' },
-  'SLV': { name: 'Silver', assetClass: 'Commodity', exchange: 'NYSE', currency: 'USD', provider: 'finnhub' },
+  // Commodities (via ETFs)
+  'GLD': { name: 'Gold', assetClass: 'Commodity', exchange: 'NYSE', currency: 'USD', provider: 'finnhub', providerSymbol: 'GLD' },
+  'SLV': { name: 'Silver', assetClass: 'Commodity', exchange: 'NYSE', currency: 'USD', provider: 'finnhub', providerSymbol: 'SLV' },
   
   // FX
-  'EURUSD': { name: 'EUR/USD', assetClass: 'FX', exchange: 'Global', currency: 'USD', provider: 'finnhub' },
-  'GBPUSD': { name: 'GBP/USD', assetClass: 'FX', exchange: 'Global', currency: 'USD', provider: 'finnhub' }
+  'EURUSD': { name: 'EUR/USD', assetClass: 'FX', exchange: 'Global', currency: 'USD', provider: 'finnhub', providerSymbol: 'EURUSD' },
+  'GBPUSD': { name: 'GBP/USD', assetClass: 'FX', exchange: 'Global', currency: 'USD', provider: 'finnhub', providerSymbol: 'GBPUSD' }
 };
 
 const finnhubApiKey = Deno.env.get('FINNHUB_API_KEY');
@@ -148,7 +148,7 @@ async function fetchMarketData(ids: string[]): Promise<MarketData[]> {
       let rawData = null;
       
       if (assetInfo.provider === 'finnhub' && finnhubApiKey) {
-        rawData = await fetchFromFinnhub(id);
+        rawData = await fetchFromFinnhub(assetInfo.providerSymbol ?? id);
       } else if (assetInfo.provider === 'coingecko') {
         rawData = await fetchFromCoingecko(id);
       }

@@ -54,7 +54,7 @@ export const useRealtimeMarketData = ({
       setError(null);
       const idsParam = ids.join(',');
       
-      const url = `https://iwbdeakpqfljskpxjejm.supabase.co/functions/v1/market-snapshot?ids=${encodeURIComponent(idsParam)}`;
+      const url = `/api/market/snapshot?ids=${encodeURIComponent(idsParam)}`;
       const res = await fetch(url, { method: 'GET' });
       const response = await res.json();
       
@@ -86,7 +86,7 @@ export const useRealtimeMarketData = ({
       }
       
       const idsParam = ids.join(',');
-      const streamUrl = `https://iwbdeakpqfljskpxjejm.supabase.co/functions/v1/market-stream?ids=${encodeURIComponent(idsParam)}`;
+      const streamUrl = `/api/market/stream?ids=${encodeURIComponent(idsParam)}`;
       
       const eventSource = new EventSource(streamUrl, {
         withCredentials: false
