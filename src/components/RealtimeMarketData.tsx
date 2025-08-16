@@ -27,9 +27,16 @@ import {
 import { useRealtimeMarketData, MarketData } from '@/hooks/useRealtimeMarketData';
 import { MarketDetailPanel } from '@/components/MarketDetailPanel';
 
-// Default assets to load
-const DEFAULT_ASSETS = ['AAPL', 'MSFT', 'ETH', 'GOOGL', 'AMZN', 'TSLA', 'REIT'];
-const KPI_ASSETS = ['SPY', 'BTC', 'REIT', 'GLD'];
+// Default assets to load (using currently supported universe)
+const DEFAULT_ASSETS = ['AAPL', 'MSFT', 'ethereum', 'GOOGL', 'AMZN', 'TSLA', 'bitcoin'];
+
+// KPI definitions with alias matching to provider ids
+const KPI_DEFS = [
+  { label: 'S&P 500', ids: ['SPX', '^GSPC', 'SPY'] },
+  { label: 'BTC', ids: ['BTC', 'bitcoin'] },
+  { label: 'REIT Index', ids: ['REIT', 'VNQ'] },
+  { label: 'Gold', ids: ['XAUUSD', 'GOLD', 'GLD'] },
+] as const;
 
 interface Filters {
   assetClass: string;
@@ -51,8 +58,8 @@ const RealtimeMarketData = () => {
     search: ''
   });
 
-  // Fetch market data for default assets + KPI assets
-  const allAssets = [...new Set([...DEFAULT_ASSETS, ...KPI_ASSETS])];
+  // Fetch market data for default assets
+  const allAssets = DEFAULT_ASSETS;
   const { data, loading, error, connected, refetch, reconnect } = useRealtimeMarketData({
     ids: allAssets,
     autoRefresh: true
@@ -66,6 +73,21 @@ const RealtimeMarketData = () => {
     return price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   };
 
+  // Symbol formatting (normalize vendor ids to canonical symbols)
+  const formatSymbol = (id: string, name: string, assetClass: string) => {
+    const map: Record<string, string> = {
+      bitcoin: 'BTC',
+      ethereum: 'ETH',
+      solana: 'SOL',
+      cardano: 'ADA',
+    };
+    const lower = id.toLowerCase();
+    if (map[lower]) return map[lower];
+    // For indices/funds, prefer ID if already uppercase, else derive from name initials
+    if (/^[A-Z0-9.^-]+$/.test(id)) return id;
+    return (name?.match(/[A-Z]/g) || []).join('').slice(0, 6) || id.toUpperCase();
+  };
+
   const formatChange = (change: number, pct: number) => {
     const sign = change >= 0 ? '+' : '';
     return `${sign}${change.toFixed(2)} (${sign}${pct.toFixed(2)}%)`;
@@ -77,9 +99,14 @@ const RealtimeMarketData = () => {
     return 'text-muted-foreground';
   };
 
-  // Get KPI data
+  // Get KPI data using alias matching
   const kpiData = useMemo(() => {
-    return KPI_ASSETS.map(id => data.find(item => item.id === id)).filter(Boolean) as MarketData[];
+    return KPI_DEFS.map(def => {
+      const aliases = def.ids.map(s => s.toLowerCase());
+      const match = data.find(item => aliases.includes(item.id.toLowerCase()));
+      if (!match) return null;
+      return { ...match, name: def.label } as MarketData;
+    }).filter(Boolean) as MarketData[];
   }, [data]);
 
   // Filter data for main table
@@ -307,14 +334,14 @@ const RealtimeMarketData = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="sticky left-0 bg-background">Asset Name</TableHead>
-                      <TableHead>Symbol</TableHead>
-                      <TableHead>Asset Class</TableHead>
-                      <TableHead className="text-right">Last Price</TableHead>
-                      <TableHead className="text-right">% Change</TableHead>
-                      <TableHead className="text-right">Daily High</TableHead>
-                      <TableHead className="text-right">Daily Low</TableHead>
-                      <TableHead className="text-right">Volume</TableHead>
+                      <TableHead className="sticky left-0 top-0 z-10 bg-background">Asset Name</TableHead>
+                      <TableHead className="sticky top-0 z-10 bg-background">Symbol</TableHead>
+                      <TableHead className="sticky top-0 z-10 bg-background">Asset Class</TableHead>
+                      <TableHead className="sticky top-0 z-10 bg-background text-right">Last Price</TableHead>
+                      <TableHead className="sticky top-0 z-10 bg-background text-right">% Change</TableHead>
+                      <TableHead className="sticky top-0 z-10 bg-background text-right">Daily High</TableHead>
+                      <TableHead className="sticky top-0 z-10 bg-background text-right">Daily Low</TableHead>
+                      <TableHead className="sticky top-0 z-10 bg-background text-right">Volume</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -331,7 +358,7 @@ const RealtimeMarketData = () => {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline">{item.id}</Badge>
+                          <Badge variant="outline">{formatSymbol(item.id, item.name, item.assetClass)}</Badge>
                         </TableCell>
                         <TableCell>
                           <Badge variant="secondary">{item.assetClass}</Badge>
