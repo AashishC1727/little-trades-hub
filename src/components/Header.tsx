@@ -23,7 +23,7 @@ const Header = () => {
   const { toast } = useToast();
 
   const navItems = [
-    { label: 'Markets', href: '/markets', icon: TrendingUp },
+    { label: 'Markets', href: '/market', icon: TrendingUp },
     { label: 'Trade', href: '/trade', icon: BarChart3 },
     { label: 'Portfolio', href: '/portfolio', icon: BarChart3 },
     { label: 'Discover', href: '/discover', icon: Compass },

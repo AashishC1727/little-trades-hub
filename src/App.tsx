@@ -77,6 +77,7 @@ const App = () => (
             <Route path="/status" element={<SystemStatus />} />
             <Route path="/security" element={<Security />} />
             <Route path="/market" element={<RealtimeMarket />} />
+            <Route path="/live-data" element={<RealtimeMarket />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
