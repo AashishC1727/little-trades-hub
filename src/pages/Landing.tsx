@@ -1,6 +1,7 @@
+
 import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
-import RealtimeMarketData from '@/components/RealtimeMarketData';
+import RealtimeMarketDataMockup from '@/components/RealtimeMarketDataMockup';
 import { YourNewsSection } from '@/components/YourNewsSection';
 import DashboardPreview from '@/components/DashboardPreview';
 import { EstimateReturns } from '@/components/EstimateReturns';
@@ -17,7 +18,7 @@ const Landing = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <HeroSection />
-      <RealtimeMarketData />
+      <RealtimeMarketDataMockup />
       <YourNewsSection />
       <DashboardPreview />
       {/* This component now contains the new features */}
