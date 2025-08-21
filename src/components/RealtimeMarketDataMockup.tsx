@@ -85,8 +85,8 @@ const RealtimeMarketDataMockup = () => {
   };
 
   const getChangeColor = (change: number) => {
-    if (change > 0) return 'text-green-600 dark:text-green-400';
-    if (change < 0) return 'text-red-600 dark:text-red-400';
+    if (change > 0) return 'text-[hsl(var(--success))]';
+    if (change < 0) return 'text-[hsl(var(--destructive))]';
     return 'text-muted-foreground';
   };
 
@@ -132,21 +132,35 @@ const RealtimeMarketDataMockup = () => {
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Main Content */}
         <div className="flex-1 min-w-0">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="text-4xl font-bold tracking-tight">REAL-TIME MARKET DATA</h1>
-              <p className="text-muted-foreground mt-1">Live market prices and updates</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-2 text-sm">
-                <Wifi className="h-4 w-4 text-green-600" />
-                <span className="text-green-600">Live</span>
+          <div className="mb-6">
+            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+              <div>
+                <h1 className="text-4xl font-bold tracking-tight">REAL-TIME MARKET DATA</h1>
+                <p className="text-muted-foreground mt-1">Live market prices and updates</p>
               </div>
-              <Button variant="outline" size="sm">
-                <RotateCcw className="h-4 w-4 mr-2" />
-                Refresh
-              </Button>
+              <div className="flex items-center gap-2 w-full lg:max-w-xl">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search assets..."
+                    value={filters.search}
+                    onChange={(e) => handleFilterChange('search', e.target.value)}
+                    className="pl-9"
+                    aria-label="Search assets by symbol or name"
+                  />
+                </div>
+                <Button variant="outline" size="sm">
+                  <Filter className="h-4 w-4 mr-2" />
+                  Filters
+                </Button>
+                <Button variant="outline" size="sm">
+                  <RotateCcw className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+            <div className="mt-2 flex items-center gap-2 text-sm">
+              <Wifi className="h-4 w-4 text-[hsl(var(--success))]" />
+              <span className="text-[hsl(var(--success))]">Live</span>
             </div>
           </div>
 
@@ -171,7 +185,7 @@ const RealtimeMarketDataMockup = () => {
                         {item.sparkline.map((_, i) => (
                           <div 
                             key={i} 
-                            className={`flex-1 rounded-sm ${item.changePct >= 0 ? 'bg-green-500' : 'bg-red-500'}`}
+                            className={`flex-1 rounded-sm ${item.changePct >= 0 ? 'bg-[hsl(var(--success))]' : 'bg-[hsl(var(--destructive))]'}`}
                             style={{ height: `${Math.random() * 60 + 20}%` }}
                           />
                         ))}
@@ -183,84 +197,6 @@ const RealtimeMarketDataMockup = () => {
             ))}
           </div>
 
-          {/* Filters */}
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Filter className="h-5 w-5" />
-                Filters & Search
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search symbol, name..."
-                    value={filters.search}
-                    onChange={(e) => handleFilterChange('search', e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-
-                <Select value={filters.assetClass} onValueChange={(value) => handleFilterChange('assetClass', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Asset Class" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Classes</SelectItem>
-                    <SelectItem value="Equity">Equity</SelectItem>
-                    <SelectItem value="Index">Index</SelectItem>
-                    <SelectItem value="Crypto">Crypto</SelectItem>
-                    <SelectItem value="FX">FX</SelectItem>
-                    <SelectItem value="Commodity">Commodity</SelectItem>
-                    <SelectItem value="RealEstate">Real Estate</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                <Select value={filters.exchange} onValueChange={(value) => handleFilterChange('exchange', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Exchange" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Exchanges</SelectItem>
-                    <SelectItem value="NASDAQ">NASDAQ</SelectItem>
-                    <SelectItem value="NYSE">NYSE</SelectItem>
-                    <SelectItem value="Global">Global</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                <Select value={filters.currency} onValueChange={(value) => handleFilterChange('currency', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Currency" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Currencies</SelectItem>
-                    <SelectItem value="USD">USD</SelectItem>
-                    <SelectItem value="EUR">EUR</SelectItem>
-                    <SelectItem value="GBP">GBP</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                <Select value={filters.session} onValueChange={(value) => handleFilterChange('session', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Session" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Sessions</SelectItem>
-                    <SelectItem value="REG">Regular</SelectItem>
-                    <SelectItem value="PRE">Pre-Market</SelectItem>
-                    <SelectItem value="POST">After-Hours</SelectItem>
-                    <SelectItem value="24H">24 Hour</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                <Button onClick={clearFilters} variant="outline" className="w-full">
-                  Clear All
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
 
           {/* Main Data Table */}
           <Card>
@@ -417,7 +353,7 @@ const RealtimeMarketDataMockup = () => {
                       return (
                         <div
                           key={i}
-                          className={`flex-1 rounded-sm ${selectedAsset.changePct >= 0 ? 'bg-green-500' : 'bg-red-500'}`}
+                          className={`flex-1 rounded-sm ${selectedAsset.changePct >= 0 ? 'bg-[hsl(var(--success))]' : 'bg-[hsl(var(--destructive))]'}`}
                           style={{ height: `${Math.max(height, 5)}%` }}
                           title={`$${price.toFixed(2)}`}
                         />
