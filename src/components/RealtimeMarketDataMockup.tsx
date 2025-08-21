@@ -128,7 +128,8 @@ const RealtimeMarketDataMockup = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <section className="py-16 bg-background">
+      <div className="container mx-auto px-4">
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Main Content */}
         <div className="flex-1 min-w-0">
@@ -442,8 +443,9 @@ const RealtimeMarketDataMockup = () => {
             </Card>
           </div>
         )}
+        </div>
       </div>
-    </div>
+    </section>
   );
 };
 
