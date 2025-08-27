@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
+// The interface for a single market data item.
 export interface MarketData {
   id: string;
   name: string;
@@ -26,12 +27,17 @@ export interface MarketData {
   ts: number;
 }
 
+// Configuration options for the hook.
 export interface UseRealtimeMarketDataOptions {
   ids: string[];
   autoRefresh?: boolean;
   refreshInterval?: number;
 }
 
+/**
+ * A React hook to fetch an initial market data snapshot and then subscribe
+ * to a real-time stream for continuous updates.
+ */
 export const useRealtimeMarketData = ({ 
   ids, 
   autoRefresh = true, 
@@ -42,152 +48,260 @@ export const useRealtimeMarketData = ({
   const [error, setError] = useState<string | null>(null);
   const [connected, setConnected] = useState(false);
   
-  const eventSourceRef = useRef<EventSource | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
   const retryCountRef = useRef(0);
+  const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const fallbackIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const maxRetries = 5;
   const baseRetryDelay = 1000;
 
-  const fetchSnapshot = useCallback(async () => {
-    if (!ids.length) return;
-    
-    try {
-      setError(null);
-      const idsParam = ids.join(',');
-      
-      const url = `/api/market/snapshot?ids=${encodeURIComponent(idsParam)}`;
-      const res = await fetch(url, { method: 'GET' });
-      const response = await res.json();
-      
-      if (!res.ok) throw new Error(response?.error || 'Snapshot request failed');
-      if (!response.success) throw new Error(response.error);
-      
-      const newDataMap = new Map<string, MarketData>();
-      response.data.forEach((item: MarketData) => {
-        newDataMap.set(item.id, item);
-      });
-      
-      setData(newDataMap);
-      setLoading(false);
-      
-    } catch (err: any) {
-      console.error('Error fetching market snapshot:', err);
-      setError(err.message || 'Failed to fetch market data');
-      setLoading(false);
-    }
-  }, [ids]);
+  // Stable reference to ids array to prevent infinite re-renders
+  const stableIds = useRef(ids);
+  const idsChanged = JSON.stringify(stableIds.current) !== JSON.stringify(ids);
+  
+  if (idsChanged) {
+    stableIds.current = ids;
+  }
 
-  const connectEventSource = useCallback(() => {
-    if (!ids.length || !autoRefresh) return;
+  // Cleanup function
+  const cleanup = useCallback(() => {
+    // Clear retry timeout
+    if (retryTimeoutRef.current) {
+      clearTimeout(retryTimeoutRef.current);
+      retryTimeoutRef.current = null;
+    }
     
-    try {
-      // Close existing connection
-      if (eventSourceRef.current) {
-        eventSourceRef.current.close();
-      }
-      
-      const idsParam = ids.join(',');
-      const streamUrl = `/api/market/stream?ids=${encodeURIComponent(idsParam)}`;
-      
-      const eventSource = new EventSource(streamUrl, {
-        withCredentials: false
-      });
-      
-      eventSourceRef.current = eventSource;
-      
-      eventSource.onopen = () => {
-        console.log('Market data stream connected');
-        setConnected(true);
-        setError(null);
-        retryCountRef.current = 0;
-      };
-      
-      eventSource.addEventListener('tick', (event) => {
-        try {
-          const tickData: MarketData = JSON.parse(event.data);
-          
-          setData(prevData => {
-            const newData = new Map(prevData);
-            newData.set(tickData.id, tickData);
-            return newData;
-          });
-          
-        } catch (err) {
-          console.error('Error parsing tick data:', err);
-        }
-      });
-      
-      eventSource.addEventListener('heartbeat', (event) => {
-        // Keep connection alive
-        console.log('Heartbeat received');
-      });
-      
-      eventSource.onerror = () => {
-        console.error('EventSource error');
-        setConnected(false);
-        
-        if (retryCountRef.current < maxRetries) {
-          retryCountRef.current++;
-          const delay = baseRetryDelay * Math.pow(2, retryCountRef.current - 1);
-          
-          setTimeout(() => {
-            console.log(`Retrying connection (attempt ${retryCountRef.current})`);
-            connectEventSource();
-          }, delay);
-        } else {
-          setError('Failed to maintain real-time connection. Retries exhausted.');
-        }
-      };
-      
-    } catch (err: any) {
-      console.error('Error setting up EventSource:', err);
-      setError(err.message || 'Failed to setup real-time connection');
+    // Clear fallback interval
+    if (fallbackIntervalRef.current) {
+      clearInterval(fallbackIntervalRef.current);
+      fallbackIntervalRef.current = null;
     }
-  }, [ids, autoRefresh]);
-
-  const disconnect = useCallback(() => {
-    if (eventSourceRef.current) {
-      eventSourceRef.current.close();
-      eventSourceRef.current = null;
+    
+    // Abort fetch stream
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
     }
+    
     setConnected(false);
   }, []);
 
-  const reconnect = useCallback(() => {
-    disconnect();
-    retryCountRef.current = 0;
-    connectEventSource();
-  }, [disconnect, connectEventSource]);
-
-  // Initial data fetch
-  useEffect(() => {
-    fetchSnapshot();
-  }, [fetchSnapshot]);
-
-  // Setup real-time connection
-  useEffect(() => {
-    if (autoRefresh) {
-      connectEventSource();
+  // Fetches the initial data snapshot from the 'market-snapshot' Edge Function.
+  const fetchSnapshot = useCallback(async () => {
+    const currentIds = stableIds.current;
+    
+    if (!currentIds.length) {
+      setLoading(false);
+      return;
     }
 
-    return () => {
-      disconnect();
-    };
-  }, [autoRefresh, connectEventSource, disconnect]);
+    setLoading(true);
+    try {
+      setError(null);
 
-  // Periodic fallback refresh
+      const { data: responseData, error: invokeError } = await supabase.functions.invoke('market-snapshot', {
+        method: 'POST',
+        body: { ids: currentIds }
+      });
+
+      if (invokeError) throw invokeError;
+      if (!responseData.success) throw new Error(responseData.error);
+
+      const newDataMap = new Map<string, MarketData>();
+      responseData.data.forEach((item: MarketData) => {
+        newDataMap.set(item.id, item);
+      });
+
+      setData(newDataMap);
+
+    } catch (err: any) {
+      console.error('Error fetching market snapshot:', err);
+      setError(err.message || 'Failed to fetch initial market data');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Parse SSE data
+  const parseSSEData = (text: string) => {
+    const lines = text.split('\n');
+    let eventType = '';
+    let data = '';
+    
+    for (const line of lines) {
+      if (line.startsWith('event:')) {
+        eventType = line.substring(6).trim();
+      } else if (line.startsWith('data:')) {
+        data = line.substring(5).trim();
+      } else if (line === '' && eventType && data) {
+        // Complete event found
+        try {
+          return { eventType, data: JSON.parse(data) };
+        } catch (e) {
+          console.error('Error parsing SSE data:', e);
+        }
+        eventType = '';
+        data = '';
+      }
+    }
+    return null;
+  };
+
+  // Establishes a connection to the real-time streaming using fetch
+  const connectStream = useCallback(async () => {
+    const currentIds = stableIds.current;
+    
+    if (!currentIds.length || !autoRefresh) {
+      return;
+    }
+    
+    // Clean up any existing connection first
+    cleanup();
+    
+    try {
+      const idsParam = currentIds.join(',');
+      const projectUrl = supabase.rest.url.replace('/rest/v1', '');
+      const streamUrl = `${projectUrl}/functions/v1/market-stream?ids=${encodeURIComponent(idsParam)}`;
+      
+      // Create new abort controller
+      const abortController = new AbortController();
+      abortControllerRef.current = abortController;
+      
+      console.log('Connecting to market stream:', streamUrl);
+      
+      const response = await fetch(streamUrl, {
+        method: 'GET',
+        headers: {
+          'Accept': 'text/event-stream'
+        },
+        signal: abortController.signal
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      if (!response.body) {
+        throw new Error('No response body');
+      }
+
+      console.log('Market data stream connected successfully.');
+      setConnected(true);
+      setError(null);
+      retryCountRef.current = 0;
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      try {
+        while (!abortController.signal.aborted) {
+          const { done, value } = await reader.read();
+          
+          if (done) {
+            console.log('Stream ended');
+            break;
+          }
+
+          buffer += decoder.decode(value, { stream: true });
+          
+          // Process complete SSE messages
+          const lines = buffer.split('\n\n');
+          buffer = lines.pop() || ''; // Keep incomplete message in buffer
+          
+          for (const chunk of lines) {
+            if (chunk.trim()) {
+              const parsed = parseSSEData(chunk);
+              
+              if (parsed) {
+                if (parsed.eventType === 'tick') {
+                  const tickData: MarketData = parsed.data;
+                  setData(prevData => {
+                    const newData = new Map(prevData);
+                    newData.set(tickData.id, tickData);
+                    return newData;
+                  });
+                } else if (parsed.eventType === 'heartbeat') {
+                  console.log('Heartbeat received from stream.');
+                }
+              }
+            }
+          }
+        }
+      } finally {
+        reader.releaseLock();
+      }
+      
+    } catch (err: any) {
+      console.error('Stream connection failed:', err);
+      setConnected(false);
+      
+      if (abortControllerRef.current) {
+        abortControllerRef.current = null;
+      }
+      
+      // Only retry if not aborted and under retry limit
+      if (!err.name?.includes('Abort') && retryCountRef.current < maxRetries) {
+        retryCountRef.current++;
+        const delay = baseRetryDelay * Math.pow(2, retryCountRef.current - 1);
+        
+        console.log(`Connection attempt ${retryCountRef.current} failed. Retrying in ${delay}ms...`);
+        
+        retryTimeoutRef.current = setTimeout(() => {
+          connectStream();
+        }, delay);
+      } else if (retryCountRef.current >= maxRetries) {
+        setError('Could not establish a real-time connection. Maximum retries reached.');
+      }
+    }
+  }, [autoRefresh, cleanup]);
+
+  // Function to manually reconnect to the stream.
+  const reconnect = useCallback(() => {
+    cleanup();
+    retryCountRef.current = 0;
+    connectStream();
+  }, [cleanup, connectStream]);
+
+  // Effect to fetch the initial data when the component mounts or IDs change.
+  useEffect(() => {
+    if (idsChanged || data.size === 0) {
+      fetchSnapshot();
+    }
+  }, [idsChanged, fetchSnapshot]);
+
+  // Effect to manage the real-time connection lifecycle.
+  useEffect(() => {
+    if (autoRefresh) {
+      connectStream();
+    } else {
+      cleanup();
+    }
+
+    // Cleanup on unmount or when dependencies change
+    return cleanup;
+  }, [autoRefresh, connectStream, cleanup, idsChanged]);
+
+  // Effect for periodic fallback refresh when connection is lost.
   useEffect(() => {
     if (!autoRefresh) return;
 
-    const interval = setInterval(() => {
+    fallbackIntervalRef.current = setInterval(() => {
       if (!connected) {
+        console.log("Fallback: Real-time connection is down. Refetching snapshot.");
         fetchSnapshot();
       }
     }, refreshInterval);
 
-    return () => clearInterval(interval);
+    return () => {
+      if (fallbackIntervalRef.current) {
+        clearInterval(fallbackIntervalRef.current);
+        fallbackIntervalRef.current = null;
+      }
+    };
   }, [autoRefresh, connected, fetchSnapshot, refreshInterval]);
 
-  // Convert Map to Array for easier consumption
+  // Convert the Map to an Array for easier consumption by UI components.
   const dataArray = Array.from(data.values());
 
   return {
